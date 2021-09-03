@@ -32,11 +32,15 @@
          "args": [
             "watch",
             "run",
-            "${workspaceFolder}/GroceryTracker.Backend/GroceryTracker.Backend.csproj",
+            "-p",
+            "${workspaceFolder}\\GroceryTracker.Backend\\GroceryTracker.Backend.csproj",
             "/property:GenerateFullPaths=true",
             "/consoleloggerparameters:NoSummary"
          ],
-         "problemMatcher": "$msCompile"
+         "problemMatcher": "$msCompile",
+         "options": {
+            "cwd": "${workspaceFolder}/GroceryTracker.Backend"
+         }
       }
    ]
 }
