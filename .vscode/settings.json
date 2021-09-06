@@ -1,0 +1,7 @@
+{
+   "editor.fontFamily": "'Cascadia Code','Operator Mono', Consolas, 'Courier New', monospace",
+   "files.exclude": {
+      "**/bin": true,
+      "**/obj": true
+   }
+}

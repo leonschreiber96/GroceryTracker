@@ -1,15 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.HttpsPolicy;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 
 namespace GroceryTracker.Backend
@@ -31,6 +25,8 @@ namespace GroceryTracker.Backend
          {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryTracker.Backend", Version = "v1" });
          });
+
+         services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
