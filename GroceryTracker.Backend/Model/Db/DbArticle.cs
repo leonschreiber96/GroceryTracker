@@ -1,0 +1,18 @@
+using System.Collections.Generic;
+
+public class DbArticle
+{
+   public int Id { get; set; }
+
+   public int OwnerId { get; set; }
+
+   public string Name { get; set; }
+
+   public double Pfand { get; set; }
+
+   public string Details { get; set; }
+
+   public List<string> Tags { get; set; }
+
+   public int CategoryId { get; set; }
+}
