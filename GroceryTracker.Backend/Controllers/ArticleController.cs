@@ -1,0 +1,36 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+
+namespace GroceryTracker.Backend.Controllers
+{
+   [ApiController]
+   [Route("[controller]")]
+   public class ArticleController : ControllerBase
+   {
+      public ArticleController()
+      {
+      }
+
+      [HttpPut]
+      public IActionResult Put([FromBody] ArticleDto articleDto)
+      {
+         throw new NotImplementedException();
+      }
+
+      [HttpPost]
+      public IActionResult Post([FromBody] ArticleDto articleDto)
+      {
+         throw new NotImplementedException();
+      }
+
+      [HttpDelete]
+      public IActionResult Delete([FromQuery] int id)
+      {
+         throw new NotImplementedException();
+      }
+   }
+}
