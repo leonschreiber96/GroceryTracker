@@ -1,18 +1,21 @@
 using System.Collections.Generic;
 
-public class DbArticle
+namespace GroceryTracker.Backend.Model.Db
 {
-   public int Id { get; set; }
+   public class DbArticle
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public string Name { get; set; }
+      public string Name { get; set; }
 
-   public double Pfand { get; set; }
+      public double Pfand { get; set; }
 
-   public string Details { get; set; }
+      public string Details { get; set; }
 
-   public List<string> Tags { get; set; }
+      public List<string> Tags { get; set; }
 
-   public int CategoryId { get; set; }
+      public int CategoryId { get; set; }
+   }
 }

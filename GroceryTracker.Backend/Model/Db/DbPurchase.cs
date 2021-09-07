@@ -1,14 +1,17 @@
-public class DbPurchase
+namespace GroceryTracker.Backend.Model.Db
 {
-   public int TripId { get; set; }
+   public class DbPurchase
+   {
+      public int TripId { get; set; }
 
-   public int ArticleId { get; set; }
+      public int ArticleId { get; set; }
 
-   public double Price { get; set; }
+      public double Price { get; set; }
 
-   public double Amount { get; set; }
+      public double Amount { get; set; }
 
-   public string UnitSize { get; set; }
+      public string UnitSize { get; set; }
 
-   public string Unit { get; set; }
+      public string Unit { get; set; }
+   }
 }

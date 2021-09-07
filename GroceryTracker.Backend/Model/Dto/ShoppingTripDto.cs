@@ -1,15 +1,18 @@
 using System;
 using System.Collections.Generic;
 
-public class ShoppingTripDto
+namespace GroceryTracker.Backend.Model.Dto
 {
-   public int Id { get; set; }
+   public class ShoppingTripDto
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public DateTime Timestamp { get; set; }
+      public DateTime Timestamp { get; set; }
 
-   public int Market { get; set; }
+      public int Market { get; set; }
 
-   public List<PurchaseDto> Purchases { get; set; }
+      public List<PurchaseDto> Purchases { get; set; }
+   }
 }

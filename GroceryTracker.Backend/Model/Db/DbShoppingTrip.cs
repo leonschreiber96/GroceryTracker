@@ -1,13 +1,16 @@
 using System;
 using System.Collections.Generic;
 
-public class DbShoppingTrip
+namespace GroceryTracker.Backend.Model.Db
 {
-   public int Id { get; set; }
+   public class DbShoppingTrip
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public DateTime Timestamp { get; set; }
+      public DateTime Timestamp { get; set; }
 
-   public int MarketId { get; set; }
+      public int MarketId { get; set; }
+   }
 }

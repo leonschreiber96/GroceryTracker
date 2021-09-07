@@ -1,8 +1,11 @@
 using System;
 
-public struct SessionToken
+namespace GroceryTracker.Backend.Auth
 {
-   public string Token { get; set; }
+   public struct SessionToken
+   {
+      public string Token { get; set; }
 
-   public DateTime ExpirationDate { get; set; }
+      public DateTime ExpirationDate { get; set; }
+   }
 }

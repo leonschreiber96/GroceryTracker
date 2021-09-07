@@ -1,8 +1,12 @@
-public class DbMarket
+
+namespace GroceryTracker.Backend.Model.Db
 {
-   public int Id { get; set; }
+   public class DbMarket
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public string Name { get; set; }
+      public string Name { get; set; }
+   }
 }

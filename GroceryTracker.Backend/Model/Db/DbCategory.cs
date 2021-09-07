@@ -1,10 +1,13 @@
-public class DbCategory
+namespace GroceryTracker.Backend.Model.Db
 {
-   public int Id { get; set; }
+   public class DbCategory
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public string Name { get; set; }
+      public string Name { get; set; }
 
-   public int ParentId { get; set; }
+      public int ParentId { get; set; }
+   }
 }

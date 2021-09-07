@@ -1,8 +1,11 @@
-public interface IAuthenticationValidator
+namespace GroceryTracker.Backend.Auth
 {
-   /// <summary>
-   /// Provided a username and password: checks if they match
-   /// </summary>
-   /// <returns>Returns true if authentication was successfull, else false</returns>
-   bool CheckAuthentication(string username, string password);
+   public interface IAuthenticationValidator
+   {
+      /// <summary>
+      /// Provided a username and password: checks if they match
+      /// </summary>
+      /// <returns>Returns true if authentication was successfull, else false</returns>
+      bool CheckAuthentication(string username, string password);
+   }
 }

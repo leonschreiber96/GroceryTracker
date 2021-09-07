@@ -1,14 +1,17 @@
 using System.Collections.Generic;
 
-public class ArticleDto
+namespace GroceryTracker.Backend.Model.Dto
 {
-   public int Id { get; set; }
+   public class ArticleDto
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public string Name { get; set; }
+      public string Name { get; set; }
 
-   public string Details { get; set; }
+      public string Details { get; set; }
 
-   public List<string> Tags { get; set; }
+      public List<string> Tags { get; set; }
+   }
 }

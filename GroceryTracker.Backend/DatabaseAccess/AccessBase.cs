@@ -4,59 +4,62 @@ using System.Threading.Tasks;
 using Dapper;
 using Npgsql;
 
-public interface IAccessBase<T>
+namespace GroceryTracker.Backend.DatabaseAccess
 {
-   Task<T> GetSingleAsync(int id);
-
-   Task<List<T>> GetManyAsync(int ids);
-
-   Task Upsert(T newValue);
-}
-
-public abstract class AccessBase<T> : IAccessBase<T>
-{
-   private string ConnectionString { get; }
-
-   protected DbEntityTypeInfo<T> EntityInfo { get; }
-
-   protected AccessBase(string host, int port, string databaseName, string username, string password)
+   public interface IAccessBase<T>
    {
-      this.ConnectionString = $"Server={host};Port={port};Database={databaseName};User Id={username};Password={password};";
-      this.EntityInfo = new DbEntityTypeInfo<T>();
+      Task<T> GetSingleAsync(int id);
+
+      Task<List<T>> GetManyAsync(int ids);
+
+      Task Upsert(T newValue);
    }
 
-   public async Task<T> GetSingleAsync(int id)
+   public abstract class AccessBase<T> : IAccessBase<T>
    {
-      using (var connection = this.CreateConnection())
+      private string ConnectionString { get; }
+
+      protected DbEntityTypeInfo<T> EntityInfo { get; }
+
+      protected AccessBase(string host, int port, string databaseName, string username, string password)
       {
-         var sql = $"SELECT * FROM {this.EntityInfo.Name} WHERE id = @id";
-         var dbResult = await connection.QuerySingleAsync<T>(sql, new { id });
-
-         return dbResult;
+         this.ConnectionString = $"Server={host};Port={port};Database={databaseName};User Id={username};Password={password};";
+         this.EntityInfo = new DbEntityTypeInfo<T>();
       }
-   }
 
-   public async Task<List<T>> GetManyAsync(int ids)
-   {
-      using (var connection = this.CreateConnection())
+      public async Task<T> GetSingleAsync(int id)
       {
-         var sql = $"SELECT * FROM {this.EntityInfo.Name} WHERE id IN @ids";
-         var dbResult = await connection.QueryAsync<T>(sql, new { ids });
+         using (var connection = this.CreateConnection())
+         {
+            var sql = $"SELECT * FROM {this.EntityInfo.Name} WHERE id = @id";
+            var dbResult = await connection.QuerySingleAsync<T>(sql, new { id });
 
-         return dbResult.ToList();
+            return dbResult;
+         }
       }
-   }
 
-   public async Task Upsert(T newValue)
-   {
-      using (var connection = this.CreateConnection())
+      public async Task<List<T>> GetManyAsync(int ids)
       {
-         var values = this.EntityInfo.GetValuePairs(newValue);
-         var sql = $"INSERT OR UPDATE INTO ${this.EntityInfo.Name} ({string.Join(',', values.Keys)}) VALUES (${string.Join(',', values.Values)})";
+         using (var connection = this.CreateConnection())
+         {
+            var sql = $"SELECT * FROM {this.EntityInfo.Name} WHERE id IN @ids";
+            var dbResult = await connection.QueryAsync<T>(sql, new { ids });
 
-         await connection.ExecuteAsync(sql);
+            return dbResult.ToList();
+         }
       }
-   }
 
-   protected NpgsqlConnection CreateConnection() => new NpgsqlConnection(this.ConnectionString);
+      public async Task Upsert(T newValue)
+      {
+         using (var connection = this.CreateConnection())
+         {
+            var values = this.EntityInfo.GetValuePairs(newValue);
+            var sql = $"INSERT OR UPDATE INTO ${this.EntityInfo.Name} ({string.Join(',', values.Keys)}) VALUES (${string.Join(',', values.Values)})";
+
+            await connection.ExecuteAsync(sql);
+         }
+      }
+
+      protected NpgsqlConnection CreateConnection() => new NpgsqlConnection(this.ConnectionString);
+   }
 }

@@ -1,10 +1,13 @@
-public class CategoryDto
+namespace GroceryTracker.Backend.Model.Dto
 {
-   public int Id { get; set; }
+   public class CategoryDto
+   {
+      public int Id { get; set; }
 
-   public int OwnerId { get; set; }
+      public int OwnerId { get; set; }
 
-   public string Name { get; set; }
+      public string Name { get; set; }
 
-   public int Parent { get; set; }
+      public int Parent { get; set; }
+   }
 }

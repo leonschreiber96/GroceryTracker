@@ -1,15 +1,19 @@
 using System.Threading.Tasks;
+using GroceryTracker.Backend.Model.Db;
 
-public interface IUserAccess
+namespace GroceryTracker.Backend.DatabaseAccess
 {
-   Task<string> GetPasswordHash(int userId);
-}
-
-public class UserAccess : AccessBase<DbUser>, IUserAccess
-{
-   public UserAccess(string host, int port, string databaseName, string username, string password) : base(host, port, databaseName, username, password)
+   public interface IUserAccess
    {
+      Task<string> GetPasswordHash(int userId);
    }
 
-   public async Task<string> GetPasswordHash(int userId) => (await base.GetSingleAsync(userId)).PasswordHash;
+   public class UserAccess : AccessBase<DbUser>, IUserAccess
+   {
+      public UserAccess(string host, int port, string databaseName, string username, string password) : base(host, port, databaseName, username, password)
+      {
+      }
+
+      public async Task<string> GetPasswordHash(int userId) => (await base.GetSingleAsync(userId)).PasswordHash;
+   }
 }

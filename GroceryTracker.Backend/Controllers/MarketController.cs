@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GroceryTracker.Backend.Model.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 
