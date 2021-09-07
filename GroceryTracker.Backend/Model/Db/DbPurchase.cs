@@ -1,6 +1,6 @@
 namespace GroceryTracker.Backend.Model.Db
 {
-   public class DbPurchase
+   public record DbPurchase
    {
       public int TripId { get; set; }
 

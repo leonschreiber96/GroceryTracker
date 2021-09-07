@@ -1,6 +1,6 @@
 namespace GroceryTracker.Backend.Model.Db
 {
-   public class DbCategory
+   public record DbCategory
    {
       public int Id { get; set; }
 

@@ -1,6 +1,6 @@
 namespace GroceryTracker.Backend.Model.Db
 {
-   public class DbUser
+   public record DbUser
    {
       public int Id { get; set; }
 
@@ -12,6 +12,8 @@ namespace GroceryTracker.Backend.Model.Db
 
       public string Email { get; set; }
 
-      public string PasswordHash { get; set; }
+      public byte[] PasswordHash { get; set; }
+
+      public byte[] PasswordSalt { get; set; }
    }
 }

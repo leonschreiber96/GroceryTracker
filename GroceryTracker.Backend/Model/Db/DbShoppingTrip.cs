@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace GroceryTracker.Backend.Model.Db
 {
-   public class DbShoppingTrip
+   public record DbShoppingTrip
    {
       public int Id { get; set; }
 

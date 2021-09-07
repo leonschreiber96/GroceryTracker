@@ -1,7 +1,7 @@
 
 namespace GroceryTracker.Backend.Model.Db
 {
-   public class DbMarket
+   public record DbMarket
    {
       public int Id { get; set; }
 
