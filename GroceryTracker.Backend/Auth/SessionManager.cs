@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography;
 using System.Text;
+using GroceryTracker.Backend.ExtensionMethods;
 
 namespace GroceryTracker.Backend.Auth
 {
@@ -113,8 +114,7 @@ namespace GroceryTracker.Backend.Auth
          using (var sha256 = SHA256.Create())
          {
             var guid = Guid.NewGuid();
-            var hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(guid.ToString()));
-            var token = Encoding.Default.GetString(hashBytes);
+            var token = guid.ToString().Sha256();
 
             return token;
          }

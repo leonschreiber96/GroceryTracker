@@ -2,21 +2,22 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text.RegularExpressions;
+using GroceryTracker.Backend.ExtensionMethods;
 
 namespace GroceryTracker.Backend.DatabaseAccess
 {
    public interface IDbEntityTypeInfo<T>
    {
       /// <summary>
-      /// The table name of the entity type in the database
+      /// Name of the entity type in kebab_case (analogous to table name in DB)
       /// </summary>
       string Name { get; }
 
       /// <summary>
-      /// Names of all the entity type's fields
+      /// Dictionary: Keys are Property Name of Model class in PascalCase
+      /// values are prop names of the entity type in kebab_case (analogous to DB)
       /// </summary>
-      string[] Props { get; }
+      Dictionary<string, string> Props { get; }
 
       /// <summary>
       /// Get a dictionary with all values of the entity type's fields, indexed with their names
@@ -25,10 +26,11 @@ namespace GroceryTracker.Backend.DatabaseAccess
       Dictionary<string, string> GetValuePairs(T entity);
    }
 
-   public class DbEntityTypeInfo<T>
+   public class DbEntityTypeInfo<T> : IDbEntityTypeInfo<T>
    {
       public string Name { get; }
-      public string[] Props { get; }
+
+      public Dictionary<string, string> Props { get; }
 
       private readonly static Func<T, string, object> getPropValue;
 
@@ -37,11 +39,12 @@ namespace GroceryTracker.Backend.DatabaseAccess
          getPropValue = InitializeGetValueAction();
       }
 
-      public DbEntityTypeInfo(string entityName = null, IEnumerable<string> entityNames = null)
+      public DbEntityTypeInfo(string entityName = null, IEnumerable<string> entityProps = null)
       {
-         this.Name = entityName ?? PascalToKebab(nameof(T));
+         this.Name = entityName ?? nameof(T).PascalToKebab();
          var propertyNames = typeof(T).GetProperties().Select(x => x.Name);
-         this.Props = entityNames?.ToArray() ?? propertyNames.Select(PascalToKebab).ToArray();
+         this.Props = new Dictionary<string, string>(
+            entityProps?.Select(x => new KeyValuePair<string, string>(x, x.PascalToKebab())));
       }
 
       public Dictionary<string, string> GetValuePairs(T entity)
@@ -50,7 +53,9 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
          foreach (var prop in this.Props)
          {
-            retVal.Add(prop, getPropValue(entity, KebabToPascal(prop)).ToString());
+            var name = prop.Value;
+            var value = getPropValue(entity, prop.Key);
+            retVal.Add(name, value.ToString());
          }
 
          return retVal;
@@ -94,8 +99,8 @@ namespace GroceryTracker.Backend.DatabaseAccess
                      Expression.Convert(                    // Return value is the result of a type conversion ..
                         propertyExpression,                 // .. that converts the value of the current property ..
                         typeof(object)                      // .. to Type object (return type of the function)
-                    )
-                )
+                     )
+                  )
                )                                            // => if ("CurrentProperty" == "WantedProperty") return instance.CurrentProperty;
             );
          }
@@ -103,9 +108,9 @@ namespace GroceryTracker.Backend.DatabaseAccess
          // After all properties have been checked, add an Expression that throws an Exception, 
          // so it throws when the provided name doesn't match any of the type's properties
          finalExpressions.Add(
-             Expression.Throw(
-                 Expression.Constant(new ArgumentException($"The provided string matches no property of {nameof(T)}"))
-             )
+            Expression.Throw(
+               Expression.Constant(new ArgumentException($"The provided string matches no property of {nameof(T)}"))
+            )
          );
 
          // This Expression is needed because the last Expression of a block for a Func must be a non-void value that can always be returned
@@ -118,23 +123,6 @@ namespace GroceryTracker.Backend.DatabaseAccess
          // Make a single Expression tree that contains information for executing the built-up function body 
          // with the provided parameter expressions and compile the result into a simple Func<T, string, object> and return it.
          return Expression.Lambda<Func<T, string, object>>(functionBody, instanceParameterExpression, stringParameterExpression).Compile();
-      }
-
-      private static string PascalToKebab(string pascal) => Regex.Replace(
-              pascal,
-              "(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])",
-              "-$1",
-              RegexOptions.Compiled)
-              .Trim()
-              .ToLower();
-
-      private static string KebabToPascal(string kebab)
-      {
-         kebab = kebab.ToLower().Replace("_", " ");
-         System.Globalization.TextInfo info = System.Globalization.CultureInfo.CurrentCulture.TextInfo;
-         var pascal = info.ToTitleCase(kebab).Replace(" ", string.Empty);
-
-         return pascal;
       }
    }
 }
