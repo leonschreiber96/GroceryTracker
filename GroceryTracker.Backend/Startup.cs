@@ -1,5 +1,6 @@
 using System;
 using GroceryTracker.Backend.Auth;
+using GroceryTracker.Backend.DatabaseAccess;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Configuration;
@@ -27,7 +28,10 @@ namespace GroceryTracker.Backend
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryTracker.Backend", Version = "v1" });
          });
 
+         var dbConfig = Configuration.GetSection("Database").Get<DatabaseConfiguration>();
+
          services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
+         services.AddSingleton<IUserAccess>(x => new UserAccess(dbConfig));
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

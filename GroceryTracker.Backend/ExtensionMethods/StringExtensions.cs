@@ -25,27 +25,6 @@ namespace GroceryTracker.Backend.ExtensionMethods
          }
       }
 
-      public static byte[] Sha256Salted(this string plainText, byte[] salt)
-      {
-         var algorithm = new SHA256Managed();
-
-         var plainBytes = plainText.ToCharArray();
-
-         byte[] plainTextWithSaltBytes = new byte[plainBytes.Length + salt.Length];
-
-         for (int i = 0; i < plainBytes.Length; i++)
-         {
-            plainTextWithSaltBytes[i] = (byte)plainBytes[i];
-         }
-
-         for (int i = 0; i < salt.Length; i++)
-         {
-            plainTextWithSaltBytes[plainText.Length + i] = salt[i];
-         }
-
-         return algorithm.ComputeHash(plainTextWithSaltBytes);
-      }
-
       public static string PascalToKebab(this string pascal)
       {
          var regex = "(?<!^)([A-Z][a-z]|(?<=[a-z])[A-Z])";

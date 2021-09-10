@@ -41,10 +41,10 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
       public DbEntityTypeInfo(string entityName = null, IEnumerable<string> entityProps = null)
       {
-         this.Name = entityName ?? nameof(T).PascalToKebab();
-         var propertyNames = typeof(T).GetProperties().Select(x => x.Name);
+         this.Name = entityName ?? System.Text.RegularExpressions.Regex.Match(typeof(T).Name, "(Db)?(.+)").Groups[2].ToString().PascalToKebab();
+         var propertyNames = entityProps ?? typeof(T).GetProperties().Select(x => x.Name);
          this.Props = new Dictionary<string, string>(
-            entityProps?.Select(x => new KeyValuePair<string, string>(x, x.PascalToKebab())));
+            propertyNames.Select(x => new KeyValuePair<string, string>(x, x.PascalToKebab())));
       }
 
       public Dictionary<string, string> GetValuePairs(T entity)
@@ -55,7 +55,9 @@ namespace GroceryTracker.Backend.DatabaseAccess
          {
             var name = prop.Value;
             var value = getPropValue(entity, prop.Key);
-            retVal.Add(name, value.ToString());
+
+            if (value.IsNumeric() || value is bool) retVal.Add(name, value?.ToString() ?? "NULL");
+            else retVal.Add(name, $"'{value}'");
          }
 
          return retVal;

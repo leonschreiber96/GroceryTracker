@@ -36,7 +36,7 @@ namespace GroceryTracker.Backend.Controllers
       }
 
       [HttpPost]
-      public async Task<IActionResult> Post([FromBody] UserDto userDto)
+      public async Task<IActionResult> Post([FromForm] UserDto userDto)
       {
          // Check provided email
          if (string.IsNullOrEmpty(userDto.Email)) return BadRequest("Email field can't be empty.");
@@ -47,10 +47,10 @@ namespace GroceryTracker.Backend.Controllers
          if (string.IsNullOrWhiteSpace(userDto.Username)) return BadRequest("Username can't be empty");
          if (!await this.userAccess.IsUsernameUnique(userDto.Username)) return BadRequest("Username is already in use.");
 
-         var salt = Guid.NewGuid().ToByteArray();
-         var passwordHash = userDto.Password.Sha256Salted(salt);
+         var salt = BCrypt.Net.BCrypt.GenerateSalt();
+         var passwordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password, salt);
 
-         var newUser = new DbUser
+         var newUser = new DbAppUser
          {
             FirstName = userDto.FirstName,
             LastName = userDto.LastName,

@@ -28,18 +28,8 @@ namespace GroceryTracker.Backend.Auth
          var matchingUser = await this.userAccess.GetUserByUsername(username);
 
          var trueHash = matchingUser.PasswordHash;
-         var salt = matchingUser.PasswordSalt;
 
-         var hash = password.Sha256Salted(salt);
-
-         if (hash.Length != trueHash.Length) return false;
-
-         for (int i = 0; i < hash.Length; i++)
-         {
-            if (hash[i] != trueHash[i]) return false;
-         }
-
-         return true;
+         return BCrypt.Net.BCrypt.Verify(password, trueHash);
       }
    }
 }

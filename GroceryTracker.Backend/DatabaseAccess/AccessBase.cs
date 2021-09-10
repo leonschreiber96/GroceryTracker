@@ -6,6 +6,7 @@ using Dapper;
 using Npgsql;
 using SqlKata;
 using SqlKata.Compilers;
+using SqlKata.Execution;
 
 namespace GroceryTracker.Backend.DatabaseAccess
 {
@@ -13,11 +14,11 @@ namespace GroceryTracker.Backend.DatabaseAccess
    {
       Task<T> GetSingleAsync(int id);
 
-      Task<T> GetSingleAsync(string sql);
+      Task<T> GetSingleAsync(Query query);
 
       Task<IEnumerable<T>> GetManyAsync(int ids);
 
-      Task<IEnumerable<T>> GetManyAsync(string sql);
+      Task<IEnumerable<T>> GetManyAsync(Query query);
 
       Task Upsert(T newValue);
 
@@ -29,13 +30,20 @@ namespace GroceryTracker.Backend.DatabaseAccess
       private string ConnectionString { get; }
 
       protected IDbEntityTypeInfo<T> EntityTypeInfo { get; }
-      protected SqlServerCompiler SqlServerCompiler { get; }
+      protected PostgresCompiler SqlCompiler { get; }
 
       protected AccessBase(string host, int port, string databaseName, string username, string password, IDbEntityTypeInfo<T> entityTypeInfo)
       {
          this.ConnectionString = $"Server={host};Port={port};Database={databaseName};User Id={username};Password={password};";
          this.EntityTypeInfo = entityTypeInfo;
-         this.SqlServerCompiler = new SqlServerCompiler();
+         this.SqlCompiler = new PostgresCompiler();
+      }
+
+      protected AccessBase(DatabaseConfiguration configuration, IDbEntityTypeInfo<T> entityTypeInfo)
+      {
+         this.ConnectionString = $"Server={configuration.Hostname};Port={configuration.Port};Database={configuration.DatabaseName};User Id={configuration.Username};Password={configuration.Password};";
+         this.EntityTypeInfo = entityTypeInfo;
+         this.SqlCompiler = new PostgresCompiler();
       }
 
       public async Task<T> GetSingleAsync(int id)
@@ -49,11 +57,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
          }
       }
 
-      public async Task<T> GetSingleAsync(string sql)
+
+      public async Task<T> GetSingleAsync(Query query)
       {
          using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
          {
-            var dbResult = await connection.QuerySingleOrDefaultAsync<T>(sql);
+            var dbResult = await queryFactory.FirstOrDefaultAsync<T>(query);
 
             return dbResult;
          }
@@ -70,11 +80,12 @@ namespace GroceryTracker.Backend.DatabaseAccess
          }
       }
 
-      public async Task<IEnumerable<T>> GetManyAsync(string sql)
+      public async Task<IEnumerable<T>> GetManyAsync(Query query)
       {
          using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
          {
-            var dbResult = await connection.QueryAsync<T>(sql);
+            var dbResult = await queryFactory.GetAsync<T>(query);
 
             return dbResult;
          }
@@ -83,11 +94,29 @@ namespace GroceryTracker.Backend.DatabaseAccess
       public async Task Upsert(T newValue)
       {
          using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
          {
             var values = this.EntityTypeInfo.GetValuePairs(newValue);
-            var sql = $"INSERT OR UPDATE INTO {this.EntityTypeInfo.Name} ({string.Join(',', values.Keys)}) VALUES ({string.Join(',', values.Values)})";
+            var fieldNames = values.Keys.ToList();
+            var fieldValues = values.Values.Select(x => x ?? "").ToList();
 
-            await connection.ExecuteAsync(sql);
+            var sb = new StringBuilder($"INSERT INTO {this.EntityTypeInfo.Name} (");
+            sb.Append(string.Join(',', fieldNames));
+            sb.Append(") VALUES (");
+            sb.Append(string.Join(',', fieldValues));
+            sb.Append($") ON CONFLICT (id) DO UPDATE ");
+            sb.Append($"SET {fieldNames[0]} = {fieldValues[0]}");
+
+            for (int i = 1; i < fieldNames.Count; i++)
+            {
+               sb.Append($",{fieldNames[i]}  = {fieldValues[i]} ");
+            }
+
+            sb.Append($"WHERE {this.EntityTypeInfo.Name}.id = {values["id"]};");
+
+            var sql = sb.ToString();
+
+            await connection.ExecuteAsync(sql, newValue);
          }
       }
 
@@ -102,5 +131,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
       }
 
       protected NpgsqlConnection CreateConnection() => new NpgsqlConnection(this.ConnectionString);
+
+      protected QueryFactory QueryFactory(NpgsqlConnection connection) => new QueryFactory(connection, this.SqlCompiler);
    }
 }

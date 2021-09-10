@@ -4,12 +4,12 @@ using SqlKata;
 
 namespace GroceryTracker.Backend.DatabaseAccess
 {
-   public interface IUserAccess : IAccessBase<DbUser>
+   public interface IUserAccess : IAccessBase<DbAppUser>
    {
       /// <summary>
       /// Returns a whole user record that matches the provided username. Else returns null.
       /// </summary>
-      Task<DbUser> GetUserByUsername(string username);
+      Task<DbAppUser> GetUserByUsername(string username);
 
       /// <summary>
       /// Checks whether a given email address already exists in the database
@@ -22,35 +22,31 @@ namespace GroceryTracker.Backend.DatabaseAccess
       Task<bool> IsUsernameUnique(string username);
    }
 
-   public class UserAccess : AccessBase<DbUser>, IUserAccess
+   public class UserAccess : AccessBase<DbAppUser>, IUserAccess
    {
-      public UserAccess(string host, int port, string databaseName, string username, string password)
-      : base(host, port, databaseName, username, password, new DbEntityTypeInfo<DbUser>())
+      public UserAccess(DatabaseConfiguration configuration) : base(configuration, new DbEntityTypeInfo<DbAppUser>())
       {
       }
 
       public async Task<bool> IsEmailUnique(string email)
       {
-         var query = new Query(this.EntityTypeInfo.Name).Where(this.EntityTypeInfo.Props[nameof(DbUser.Email)], email);
-         var compiledQuery = this.SqlServerCompiler.Compile(query);
+         var query = new Query(this.EntityTypeInfo.Name).Where(this.EntityTypeInfo.Props[nameof(DbAppUser.Email)], email);
 
-         return (await this.GetSingleAsync(compiledQuery.Sql)) != null;
+         return (await this.GetSingleAsync(query)) == null;
       }
 
       public async Task<bool> IsUsernameUnique(string username)
       {
-         var query = new Query(this.EntityTypeInfo.Name).Where(this.EntityTypeInfo.Props[nameof(DbUser.Username)], username);
-         var compiledQuery = this.SqlServerCompiler.Compile(query);
+         var query = new Query(this.EntityTypeInfo.Name).Where(this.EntityTypeInfo.Props[nameof(DbAppUser.Username)], username);
 
-         return (await this.GetSingleAsync(compiledQuery.Sql)) != null;
+         return (await this.GetSingleAsync(query)) == null;
       }
 
-      public async Task<DbUser> GetUserByUsername(string username)
+      public async Task<DbAppUser> GetUserByUsername(string username)
       {
-         var query = new Query(this.EntityTypeInfo.Name).Where(this.EntityTypeInfo.Props[nameof(DbUser.Username)], username);
-         var compiledQuery = this.SqlServerCompiler.Compile(query);
+         var query = new Query(this.EntityTypeInfo.Name).Where(this.EntityTypeInfo.Props[nameof(DbAppUser.Username)], username);
 
-         return await this.GetSingleAsync(compiledQuery.Sql);
+         return await this.GetSingleAsync(query);
       }
    }
 }
