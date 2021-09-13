@@ -19,9 +19,9 @@ namespace GroceryTracker.Backend.Controllers
       }
 
       [HttpGet]
-      public async Task<IActionResult> GetAll()
+      public async Task<IActionResult> GetAll([FromQuery] int limit = 30)
       {
-         var categories = await this.categoryAccess.GetAllAsync();
+         var categories = await this.categoryAccess.GetAllAsync(limit);
 
          return Ok(categories);
       }
@@ -29,20 +29,21 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] CategoryDto categoryDto)
       {
-         var targetCategory = await this.categoryAccess.GetSingleAsync(categoryDto.Id);
+         var targetCategory = await this.categoryAccess.GetSingleAsync(categoryDto.CategoryId);
 
          if (targetCategory == null) return NotFound("Category does not exist in database.");
 
          if (targetCategory.ParentId != categoryDto.Parent)
          {
-            // Validate new parent category
+            var parent = this.categoryAccess.GetSingleAsync((int)categoryDto.Parent);
+            if (parent == null) return NotFound("Parent category does not exist in database.");
          }
 
          var category = new DbCategory
          {
-            Id = -1, // Id Id is ignored and set to 0, the entity with id 0 will be updated instead of insert operation
-            Name = categoryDto.Name,
-            ParentId = categoryDto.Parent
+            Id = categoryDto.CategoryId,
+            Name = categoryDto.Name ?? targetCategory.Name,
+            ParentId = categoryDto.Parent ?? targetCategory.ParentId
          };
 
          try
@@ -60,7 +61,11 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPost]
       public async Task<IActionResult> Post([FromForm] CategoryDto categoryDto)
       {
-         // Validate new parent category
+         if (categoryDto.Parent != null)
+         {
+            var parent = this.categoryAccess.GetSingleAsync((int)categoryDto.Parent);
+            if (parent == null) return NotFound("Parent category does not exist in database.");
+         }
 
          var category = new DbCategory
          {
@@ -77,7 +82,7 @@ namespace GroceryTracker.Backend.Controllers
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Category info changed successfully!");
+         return Ok("Category created successfully!");
       }
 
       [HttpDelete]
@@ -96,7 +101,7 @@ namespace GroceryTracker.Backend.Controllers
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Category info changed successfully!");
+         return Ok("Category deleted successfully!");
       }
    }
 }

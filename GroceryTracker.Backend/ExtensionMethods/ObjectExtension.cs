@@ -1,8 +1,3 @@
-using System;
-using System.Security.Cryptography;
-using System.Text;
-using System.Text.RegularExpressions;
-
 namespace GroceryTracker.Backend.ExtensionMethods
 {
    public static class ObjectExtensions
@@ -19,7 +14,8 @@ namespace GroceryTracker.Backend.ExtensionMethods
             || value is ulong
             || value is float
             || value is double
-            || value is decimal;
+            || value is decimal
+            || value is sbyte;
       }
    }
 }

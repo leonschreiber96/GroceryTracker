@@ -38,6 +38,10 @@ namespace GroceryTracker.Backend
 
          services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
          services.AddSingleton<IUserAccess>(x => new UserAccess(dbConfig));
+         services.AddSingleton<IArticleAccess>(x => new ArticleAccess(dbConfig));
+         services.AddSingleton<ICategoryAccess>(x => new CategoryAccess(dbConfig));
+         services.AddSingleton<IMarketAccess>(x => new MarketAccess(dbConfig));
+         services.AddSingleton<IShoppingTripAccess>(x => new ShoppingTripAccess(dbConfig));
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

@@ -4,7 +4,7 @@ namespace GroceryTracker.Backend.Model.Dto
 {
    public class PurchaseDto
    {
-      public int Id { get; set; }
+      public int PurchaseId { get; set; }
 
       public int TripId { get; set; }
 

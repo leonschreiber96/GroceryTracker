@@ -1,10 +1,9 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using GroceryTracker.Backend.DatabaseAccess;
+using GroceryTracker.Backend.Model.Db;
 using GroceryTracker.Backend.Model.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace GroceryTracker.Backend.Controllers
 {
@@ -12,32 +11,83 @@ namespace GroceryTracker.Backend.Controllers
    [Route("[controller]")]
    public class MarketController : ControllerBase
    {
-      public MarketController()
+      private readonly IMarketAccess marketAccess;
+
+      public MarketController(IMarketAccess marketAccess)
       {
+         this.marketAccess = marketAccess;
       }
 
       [HttpGet]
-      public IActionResult GetAll()
+      public async Task<IActionResult> GetAll([FromQuery] int limit = 30)
       {
-         throw new NotImplementedException();
+         var categories = await this.marketAccess.GetAllAsync(limit);
+
+         return Ok(categories);
       }
 
       [HttpPut]
-      public IActionResult Put([FromBody] MarketDto articleDto)
+      public async Task<IActionResult> Put([FromForm] MarketDto marketDto)
       {
-         throw new NotImplementedException();
+         var targetMarket = await this.marketAccess.GetSingleAsync(marketDto.MarketId);
+
+         if (targetMarket == null) return NotFound("Market does not exist in database.");
+
+         var market = new DbMarket
+         {
+            Id = marketDto.MarketId,
+            Name = marketDto.Name,
+         };
+
+         try
+         {
+            await this.marketAccess.Update(market);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("Market info changed successfully!");
       }
 
       [HttpPost]
-      public IActionResult Post([FromBody] MarketDto articleDto)
+      public async Task<IActionResult> Post([FromForm] MarketDto marketDto)
       {
-         throw new NotImplementedException();
+         var market = new DbMarket
+         {
+            Name = marketDto.Name
+         };
+
+         try
+         {
+            await this.marketAccess.Insert(market);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("Market info changed successfully!");
       }
 
       [HttpDelete]
-      public IActionResult Delete([FromQuery] int id)
+      public async Task<IActionResult> Delete([FromQuery] int marketId)
       {
-         throw new NotImplementedException();
+         var targetMarket = await this.marketAccess.GetSingleAsync(marketId);
+
+         if (targetMarket == null) return NotFound("Market does not exist in database.");
+
+         try
+         {
+            await this.marketAccess.Delete(marketId);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("Market deleted successfully!");
       }
    }
 }

@@ -23,7 +23,7 @@ namespace GroceryTracker.Backend.Controllers
       [HttpGet]
       public async Task<IActionResult> Get([FromQuery] int tripId)
       {
-         var result = await this.shoppingTripAccess.GetSingleAsync(tripId);
+         var result = await this.shoppingTripAccess.GetSingleDetailed(tripId);
 
          if (result == null) return NotFound("Shopping Trip does not exist in the database:");
 
@@ -32,9 +32,11 @@ namespace GroceryTracker.Backend.Controllers
 
       [HttpGet]
       [Route("all")]
-      public IActionResult GetAll([FromQuery] int limit = 30)
+      public async Task<IActionResult> GetAll([FromQuery] int limit = 30)
       {
-         throw new NotImplementedException();
+         var categories = await this.shoppingTripAccess.GetAllAsync(limit);
+
+         return Ok(categories);
       }
 
       [HttpPut]

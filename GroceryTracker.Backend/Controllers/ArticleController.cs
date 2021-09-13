@@ -21,7 +21,7 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] ArticleDto articleDto)
       {
-         var targetArticle = await this.articleAccess.GetSingleAsync(articleDto.Id);
+         var targetArticle = await this.articleAccess.GetSingleAsync(articleDto.ArticleId);
 
          if (targetArticle == null) return NotFound("Article does not exist in database.");
 
@@ -37,7 +37,7 @@ namespace GroceryTracker.Backend.Controllers
 
          var article = new DbArticle
          {
-            Id = -1, // Id Id is ignored and set to 0, the entity with id 0 will be updated instead of insert operation
+            Id = articleDto.ArticleId,
             Name = articleDto.Name,
             BrandId = articleDto.BrandId,
             CategoryId = articleDto.CategoryId,
@@ -86,7 +86,7 @@ namespace GroceryTracker.Backend.Controllers
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Article info changed successfully!");
+         return Ok("Article created successfully!");
       }
 
       [HttpDelete]
@@ -105,7 +105,7 @@ namespace GroceryTracker.Backend.Controllers
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Article info changed successfully!");
+         return Ok("Article deleted successfully!");
       }
    }
 }

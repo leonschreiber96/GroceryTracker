@@ -21,7 +21,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
       Task<IEnumerable<T>> GetManyAsync(Query query);
 
-      Task<IEnumerable<T>> GetAllAsync();
+      Task<IEnumerable<T>> GetAllAsync(int limit);
 
       Task Upsert(T newValue);
 
@@ -76,12 +76,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
          }
       }
 
-      public async Task<IEnumerable<T>> GetAllAsync()
+      public async Task<IEnumerable<T>> GetAllAsync(int limit)
       {
          using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
          {
-            var sql = $"SELECT * FROM {this.EntityTypeInfo.Name}";
-            var dbResult = await connection.QueryAsync<T>(sql);
+            var query = new Query(this.EntityTypeInfo.Name).Limit(limit).GetAsync<T>();
+            var dbResult = await queryFactory.Query(this.EntityTypeInfo.Name).Limit(limit).GetAsync<T>();
 
             return dbResult;
          }

@@ -32,7 +32,7 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] UserDto userDto)
       {
-         var targetUser = await this.userAccess.GetSingleAsync(userDto.Id);
+         var targetUser = await this.userAccess.GetSingleAsync(userDto.UserId);
 
          if (targetUser == null) return NotFound("User does not exist in the database:");
 
@@ -56,7 +56,7 @@ namespace GroceryTracker.Backend.Controllers
 
          var user = new DbAppUser
          {
-            Id = userDto.Id,
+            Id = userDto.UserId,
             FirstName = userDto.FirstName,
             LastName = userDto.LastName,
             Email = userDto.Email,
@@ -97,7 +97,6 @@ namespace GroceryTracker.Backend.Controllers
 
          var newUser = new DbAppUser
          {
-            Id = -1, // Id Id is ignored and set to 0, the entity with id 0 will be updated instead of insert operation
             FirstName = userDto.FirstName,
             LastName = userDto.LastName,
             Email = userDto.Email,

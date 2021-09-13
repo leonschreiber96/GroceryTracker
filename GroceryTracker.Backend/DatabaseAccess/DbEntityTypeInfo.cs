@@ -56,7 +56,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
             var name = prop.Value;
             var value = getPropValue(entity, prop.Key);
 
-            if (value.IsNumeric() || value is bool) retVal.Add(name, value?.ToString() ?? "NULL");
+            if (value.IsNumeric() || value is bool || value is null) retVal.Add(name, value?.ToString() ?? "NULL");
             else retVal.Add(name, $"'{value}'");
          }
 
