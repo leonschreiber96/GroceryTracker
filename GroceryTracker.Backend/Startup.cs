@@ -1,11 +1,15 @@
 using System;
+using System.Text;
 using GroceryTracker.Backend.Auth;
 using GroceryTracker.Backend.DatabaseAccess;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace GroceryTracker.Backend
@@ -28,7 +32,9 @@ namespace GroceryTracker.Backend
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryTracker.Backend", Version = "v1" });
          });
 
+         Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
          var dbConfig = Configuration.GetSection("Database").Get<DatabaseConfiguration>();
+         var identityKey = Configuration["Identity:Key"];
 
          services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
          services.AddSingleton<IUserAccess>(x => new UserAccess(dbConfig));
@@ -50,7 +56,9 @@ namespace GroceryTracker.Backend
 
          app.UseEndpoints(endpoints =>
          {
-            endpoints.MapControllers();
+            endpoints
+            .MapControllers();
+            // .RequireAuthorization();
          });
       }
    }

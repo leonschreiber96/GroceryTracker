@@ -17,7 +17,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
       Task<bool> IsEmailUnique(string email);
 
       /// <summary>
-      /// Checks whether a given username already exists in the database
+      /// Checks whether a given username already exists in the database.
       /// </summary>
       Task<bool> IsUsernameUnique(string username);
    }

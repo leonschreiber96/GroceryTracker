@@ -1,14 +1,10 @@
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using GroceryTracker.Backend.DatabaseAccess;
-using GroceryTracker.Backend.ExtensionMethods;
 using GroceryTracker.Backend.Model.Db;
 using GroceryTracker.Backend.Model.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace GroceryTracker.Backend.Controllers
 {
@@ -24,17 +20,66 @@ namespace GroceryTracker.Backend.Controllers
       }
 
       [HttpGet]
-      public IActionResult Get([FromQuery] int id)
+      public async Task<IActionResult> Get([FromQuery] int userId)
       {
-         throw new NotImplementedException();
+         var targetUser = await this.userAccess.GetSingleAsync(userId);
+
+         if (targetUser == null) return NotFound("User does not exist in the database:");
+
+         return Ok(targetUser);
       }
 
       [HttpPut]
-      public IActionResult Put([FromBody] UserDto userDto)
+      public async Task<IActionResult> Put([FromForm] UserDto userDto)
       {
-         throw new NotImplementedException();
+         var targetUser = await this.userAccess.GetSingleAsync(userDto.Id);
+
+         if (targetUser == null) return NotFound("User does not exist in the database:");
+
+         if (userDto.Email != targetUser.Email)
+         {
+            // Check provided email
+            if (string.IsNullOrEmpty(userDto.Email)) return BadRequest("Email field can't be empty.");
+            if (!this.IsMailAddress(userDto.Email)) return BadRequest("Email field contains no valid e-mail address.");
+            if (!await this.userAccess.IsEmailUnique(userDto.Email)) return BadRequest("Email-address is already in use.");
+         }
+
+         if (userDto.Username != targetUser.Username)
+         {
+            // Check provided username
+            if (string.IsNullOrWhiteSpace(userDto.Username)) return BadRequest("Username can't be empty");
+            if (!await this.userAccess.IsUsernameUnique(userDto.Username)) return BadRequest("Username is already in use.");
+         }
+
+         var salt = BCrypt.Net.BCrypt.GenerateSalt();
+         var passwordHash = BCrypt.Net.BCrypt.HashPassword(userDto.Password, salt);
+
+         var user = new DbAppUser
+         {
+            Id = userDto.Id,
+            FirstName = userDto.FirstName,
+            LastName = userDto.LastName,
+            Email = userDto.Email,
+            Username = userDto.Username,
+            PasswordHash = passwordHash,
+            PasswordSalt = salt
+         };
+
+         try
+         {
+            await this.userAccess.Update(user);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("User info changed successfully!");
       }
 
+      /// <summary>
+      /// Creates a new user from registration form input data. Input values are checked for validity.
+      /// </summary>
       [HttpPost]
       public async Task<IActionResult> Post([FromForm] UserDto userDto)
       {
@@ -52,6 +97,7 @@ namespace GroceryTracker.Backend.Controllers
 
          var newUser = new DbAppUser
          {
+            Id = -1, // Id Id is ignored and set to 0, the entity with id 0 will be updated instead of insert operation
             FirstName = userDto.FirstName,
             LastName = userDto.LastName,
             Email = userDto.Email,
@@ -60,15 +106,35 @@ namespace GroceryTracker.Backend.Controllers
             PasswordSalt = salt
          };
 
-         await this.userAccess.Upsert(newUser);
+         try
+         {
+            await this.userAccess.Insert(newUser);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
 
-         return Ok();
+         return Ok("User created successfully!");
       }
 
       [HttpDelete]
-      public IActionResult Delete([FromQuery] int id)
+      public async Task<IActionResult> Delete([FromQuery] int userId)
       {
-         throw new NotImplementedException();
+         var targetUser = await this.userAccess.GetSingleAsync(userId);
+
+         if (targetUser == null) return NotFound("User does not exist in the database:");
+
+         try
+         {
+            await this.userAccess.Delete(userId);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("User deleted successfully!");
       }
 
       private bool IsMailAddress(string input)

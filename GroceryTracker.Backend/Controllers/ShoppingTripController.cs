@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using GroceryTracker.Backend.DatabaseAccess;
 using GroceryTracker.Backend.Model.Dto;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
@@ -12,14 +13,21 @@ namespace GroceryTracker.Backend.Controllers
    [Route("[controller]")]
    public class ShoppingTripController : ControllerBase
    {
-      public ShoppingTripController()
+      private readonly IShoppingTripAccess shoppingTripAccess;
+
+      public ShoppingTripController(IShoppingTripAccess shoppingTripAccess)
       {
+         this.shoppingTripAccess = shoppingTripAccess;
       }
 
       [HttpGet]
-      public IActionResult Get([FromQuery] int id)
+      public async Task<IActionResult> Get([FromQuery] int tripId)
       {
-         throw new NotImplementedException();
+         var result = await this.shoppingTripAccess.GetSingleAsync(tripId);
+
+         if (result == null) return NotFound("Shopping Trip does not exist in the database:");
+
+         return Ok(result);
       }
 
       [HttpGet]

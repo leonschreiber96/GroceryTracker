@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
+using GroceryTracker.Backend.DatabaseAccess;
+using GroceryTracker.Backend.Model.Db;
 using GroceryTracker.Backend.Model.Dto;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Extensions.Logging;
 
 namespace GroceryTracker.Backend.Controllers
 {
@@ -12,26 +11,101 @@ namespace GroceryTracker.Backend.Controllers
    [Route("[controller]")]
    public class ArticleController : ControllerBase
    {
-      public ArticleController()
+      private readonly IArticleAccess articleAccess;
+
+      public ArticleController(IArticleAccess articleAccess)
       {
+         this.articleAccess = articleAccess;
       }
 
       [HttpPut]
-      public IActionResult Put([FromBody] ArticleDto articleDto)
+      public async Task<IActionResult> Put([FromForm] ArticleDto articleDto)
       {
-         throw new NotImplementedException();
+         var targetArticle = await this.articleAccess.GetSingleAsync(articleDto.Id);
+
+         if (targetArticle == null) return NotFound("Article does not exist in database.");
+
+         if (targetArticle.CategoryId != articleDto.CategoryId)
+         {
+            // Validate new category
+         }
+
+         if (targetArticle.BrandId != articleDto.BrandId)
+         {
+            // Validate new brand
+         }
+
+         var article = new DbArticle
+         {
+            Id = -1, // Id Id is ignored and set to 0, the entity with id 0 will be updated instead of insert operation
+            Name = articleDto.Name,
+            BrandId = articleDto.BrandId,
+            CategoryId = articleDto.CategoryId,
+            Details = articleDto.Details,
+            OwnerId = articleDto.OwnerId,
+            Pfand = articleDto.Pfand,
+            Tags = articleDto.Tags
+         };
+
+         try
+         {
+            await this.articleAccess.Update(article);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("Article info changed successfully!");
       }
 
       [HttpPost]
-      public IActionResult Post([FromBody] ArticleDto articleDto)
+      public async Task<IActionResult> Post([FromForm] ArticleDto articleDto)
       {
-         throw new NotImplementedException();
+         // Validate new category
+
+         // Validate new brand
+
+         var article = new DbArticle
+         {
+            Name = articleDto.Name,
+            BrandId = articleDto.BrandId,
+            CategoryId = articleDto.CategoryId,
+            Details = articleDto.Details,
+            OwnerId = articleDto.OwnerId,
+            Pfand = articleDto.Pfand,
+            Tags = articleDto.Tags
+         };
+
+         try
+         {
+            await this.articleAccess.Insert(article);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("Article info changed successfully!");
       }
 
       [HttpDelete]
-      public IActionResult Delete([FromQuery] int id)
+      public async Task<IActionResult> Delete([FromQuery] int articleId)
       {
-         throw new NotImplementedException();
+         var targetArticle = await this.articleAccess.GetSingleAsync(articleId);
+
+         if (targetArticle == null) return NotFound("Article does not exist in database.");
+
+         try
+         {
+            await this.articleAccess.Delete(articleId);
+         }
+         catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
+         {
+            return StatusCode(501, ex.Message);
+         }
+
+         return Ok("Article info changed successfully!");
       }
    }
 }

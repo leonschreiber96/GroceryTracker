@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -20,7 +21,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
       Task<IEnumerable<T>> GetManyAsync(Query query);
 
+      Task<IEnumerable<T>> GetAllAsync();
+
       Task Upsert(T newValue);
+
+      Task Insert(T newValue);
+
+      Task Update(T value);
 
       Task Delete(int id);
    }
@@ -50,8 +57,8 @@ namespace GroceryTracker.Backend.DatabaseAccess
       {
          using (var connection = this.CreateConnection())
          {
-            var sql = $"SELECT * FROM {this.EntityTypeInfo.Name} WHERE id = ${id}";
-            var dbResult = await connection.QuerySingleAsync<T>(sql);
+            var sql = $"SELECT * FROM {this.EntityTypeInfo.Name} WHERE id = {id}";
+            var dbResult = await connection.QuerySingleOrDefaultAsync<T>(sql);
 
             return dbResult;
          }
@@ -64,6 +71,17 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var queryFactory = this.QueryFactory(connection))
          {
             var dbResult = await queryFactory.FirstOrDefaultAsync<T>(query);
+
+            return dbResult;
+         }
+      }
+
+      public async Task<IEnumerable<T>> GetAllAsync()
+      {
+         using (var connection = this.CreateConnection())
+         {
+            var sql = $"SELECT * FROM {this.EntityTypeInfo.Name}";
+            var dbResult = await connection.QueryAsync<T>(sql);
 
             return dbResult;
          }
@@ -88,6 +106,56 @@ namespace GroceryTracker.Backend.DatabaseAccess
             var dbResult = await queryFactory.GetAsync<T>(query);
 
             return dbResult;
+         }
+      }
+
+      public async Task Insert(T newValue)
+      {
+         using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
+         {
+            var values = new Dictionary<string, string>(
+               this.EntityTypeInfo.GetValuePairs(newValue)
+               .Where(x => !string.Equals(x.Key, "id", StringComparison.OrdinalIgnoreCase))
+            );
+
+            var fieldNames = values.Keys.ToList();
+            var fieldValues = values.Values.Select(x => x ?? "").ToList();
+
+            var sb = new StringBuilder($"INSERT INTO {this.EntityTypeInfo.Name} (");
+            sb.Append(string.Join(',', fieldNames));
+            sb.Append(") VALUES (");
+            sb.Append(string.Join(',', fieldValues));
+            sb.Append($");");
+
+            var sql = sb.ToString();
+
+            await connection.ExecuteAsync(sql, newValue);
+         }
+      }
+
+      public async Task Update(T value)
+      {
+         using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
+         {
+            var values = this.EntityTypeInfo.GetValuePairs(value);
+            var fieldNames = values.Keys.ToList();
+            var fieldValues = values.Values.Select(x => x ?? "").ToList();
+
+            var sb = new StringBuilder($"UPDATE {this.EntityTypeInfo.Name} ");
+            sb.Append($"SET {fieldNames[0]} = {fieldValues[0]}");
+
+            for (int i = 1; i < fieldNames.Count; i++)
+            {
+               sb.Append($",{fieldNames[i]}  = {fieldValues[i]} ");
+            }
+
+            sb.Append($"WHERE {this.EntityTypeInfo.Name}.id = {values["id"]};");
+
+            var sql = sb.ToString();
+
+            await connection.ExecuteAsync(sql, value);
          }
       }
 
