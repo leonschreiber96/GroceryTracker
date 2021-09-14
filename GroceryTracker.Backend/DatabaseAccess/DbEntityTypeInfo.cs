@@ -1,7 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Text;
 using GroceryTracker.Backend.ExtensionMethods;
 
 namespace GroceryTracker.Backend.DatabaseAccess
@@ -92,6 +94,18 @@ namespace GroceryTracker.Backend.DatabaseAccess
             var value = getPropValue(entity, prop.Key);
 
             if (value.IsNumeric() || value is bool || value is null) retVal.Add(name, value?.ToString() ?? "NULL");
+            else if (value is IEnumerable && !(value is string))
+            {
+               var sb = new StringBuilder("'{");
+               foreach (var val in value as IEnumerable)
+               {
+                  sb.Append($"\"{val.ToString()}\",");
+               }
+               sb.Remove(sb.Length - 1, 1);
+               sb.Append("}'");
+
+               retVal.Add(name, sb.ToString());
+            }
             else retVal.Add(name, $"'{value}'");
          }
 

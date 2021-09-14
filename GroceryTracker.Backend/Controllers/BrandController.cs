@@ -63,7 +63,7 @@ namespace GroceryTracker.Backend.Controllers
          {
             var newId = await this.brandAccess.InsertAsync(brand);
 
-            return Created($"/brand/{newId}", "Brand info changed successfully!");
+            return Created($"/brand/{newId}", new { message = "Brand info changed successfully!", newId });
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

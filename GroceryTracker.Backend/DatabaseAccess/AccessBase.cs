@@ -94,19 +94,23 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            // var values = new Dictionary<string, string>(
-            //    this.EntityTypeInfo.GetValuePairs(newValue)
-            //    .Where(x => !string.Equals(x.Key, "id", StringComparison.OrdinalIgnoreCase))
-            // );
+            var values = new Dictionary<string, string>(
+               this.EntityTypeInfo.GetStringValues(newValue)
+               .Where(x => !string.Equals(x.Key, "id", StringComparison.OrdinalIgnoreCase))
+            );
 
-            // var fieldNames = values.Keys.ToList();
-            // var fieldValues = values.Values.Select(x => x ?? "").ToList();
+            var fieldNames = values.Keys.ToList();
+            var fieldValues = values.Values.Select(x => x ?? "").ToList();
 
-            // Remove id value so that a new id can be chosen by the database
-            // TODO: don't hardcode id field name
-            var values = this.EntityTypeInfo.GetValues(newValue).Where(x => x.Key != "Id");
+            var sb = new StringBuilder($"INSERT INTO {this.EntityTypeInfo.Name} (");
+            sb.Append(string.Join(',', fieldNames));
+            sb.Append(") VALUES (");
+            sb.Append(string.Join(',', fieldValues));
+            sb.Append($") RETURNING id;");
 
-            var newId = await queryFactory.Query(this.EntityTypeInfo.Name).InsertGetIdAsync<int>(values);
+            var sql = sb.ToString();
+
+            var newId = await connection.ExecuteScalarAsync<int>(sql, newValue);
 
             return newId;
          }

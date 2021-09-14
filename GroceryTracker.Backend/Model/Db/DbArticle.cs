@@ -10,7 +10,7 @@ namespace GroceryTracker.Backend.Model.Db
 
       public string Name { get; set; }
 
-      public double Pfand { get; set; }
+      public double? Pfand { get; set; }
 
       public string Details { get; set; }
 
@@ -18,6 +18,6 @@ namespace GroceryTracker.Backend.Model.Db
 
       public int CategoryId { get; set; }
 
-      public int BrandId { get; set; }
+      public int? BrandId { get; set; }
    }
 }

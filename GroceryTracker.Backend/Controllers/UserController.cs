@@ -109,7 +109,7 @@ namespace GroceryTracker.Backend.Controllers
          {
             var newId = await this.userAccess.InsertAsync(newUser);
 
-            return Created($"/user/{newId}", "User created successfully!");
+            return Created($"/user/{newId}", new { message = "User created successfully!", newId });
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

@@ -77,7 +77,7 @@ namespace GroceryTracker.Backend.Controllers
          {
             var newId = await this.categoryAccess.InsertAsync(category);
 
-            return Created($"/category/{newId}", "Category created successfully!");
+            return Created($"/category/{newId}", new { message = "Category created successfully!", newId });
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

@@ -23,7 +23,7 @@ namespace GroceryTracker.Backend.Model.Full
 
       public string Name { get; set; }
 
-      public double Pfand { get; set; }
+      public double? Pfand { get; set; }
 
       public string Details { get; set; }
 

@@ -81,7 +81,7 @@ namespace GroceryTracker.Backend.Controllers
          {
             var newId = await this.articleAccess.InsertAsync(article);
 
-            return Created($"/article/{newId}", "Article created successfully!");
+            return Created($"/article/{newId}", new { message = "Article created successfully!", newId });
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
