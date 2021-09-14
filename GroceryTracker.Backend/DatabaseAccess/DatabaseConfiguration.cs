@@ -1,6 +1,15 @@
 namespace GroceryTracker.Backend.DatabaseAccess
 {
-   public class DatabaseConfiguration
+   public interface IDatabaseConfiguration
+   {
+      string Hostname { get; set; }
+      string DatabaseName { get; set; }
+      int Port { get; set; }
+      string Username { get; set; }
+      string Password { get; set; }
+   }
+
+   public class DatabaseConfiguration : IDatabaseConfiguration
    {
       public string Hostname { get; set; }
 

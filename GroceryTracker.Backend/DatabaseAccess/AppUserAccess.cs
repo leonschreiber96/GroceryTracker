@@ -22,9 +22,10 @@ namespace GroceryTracker.Backend.DatabaseAccess
       Task<bool> IsUsernameUnique(string username);
    }
 
-   public class UserAccess : AccessBase<DbAppUser>, IUserAccess
+   public class AppUserAccess : AccessBase<DbAppUser>, IUserAccess
    {
-      public UserAccess(DatabaseConfiguration configuration) : base(configuration, new DbEntityTypeInfo<DbAppUser>())
+      public AppUserAccess(IDatabaseConfiguration configuration, IDbEntityTypeInfo<DbAppUser> entityTypeInfo)
+      : base(configuration, entityTypeInfo)
       {
       }
 

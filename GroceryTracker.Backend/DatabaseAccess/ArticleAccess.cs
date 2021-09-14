@@ -11,7 +11,8 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
    public class ArticleAccess : AccessBase<DbArticle>, IArticleAccess
    {
-      public ArticleAccess(DatabaseConfiguration configuration) : base(configuration, new DbEntityTypeInfo<DbArticle>())
+      public ArticleAccess(IDatabaseConfiguration configuration, IDbEntityTypeInfo<DbArticle> entityTypeInfo)
+      : base(configuration, entityTypeInfo)
       {
       }
    }

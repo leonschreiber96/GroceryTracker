@@ -39,10 +39,10 @@ namespace GroceryTracker.Backend.DatabaseAccess
          getPropValue = InitializeGetValueAction();
       }
 
-      public DbEntityTypeInfo(string entityName = null, IEnumerable<string> entityProps = null)
+      public DbEntityTypeInfo()
       {
-         this.Name = entityName ?? System.Text.RegularExpressions.Regex.Match(typeof(T).Name, "(Db)?(.+)").Groups[2].ToString().PascalToKebab();
-         var propertyNames = entityProps ?? typeof(T).GetProperties().Select(x => x.Name);
+         this.Name = System.Text.RegularExpressions.Regex.Match(typeof(T).Name, "(Db)?(.+)").Groups[2].ToString().PascalToKebab();
+         var propertyNames = typeof(T).GetProperties().Select(x => x.Name);
          this.Props = new Dictionary<string, string>(
             propertyNames.Select(x => new KeyValuePair<string, string>(x, x.PascalToKebab())));
       }

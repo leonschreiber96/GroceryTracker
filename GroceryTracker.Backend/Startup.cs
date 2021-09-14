@@ -1,15 +1,12 @@
 using System;
-using System.Text;
 using GroceryTracker.Backend.Auth;
 using GroceryTracker.Backend.DatabaseAccess;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
+using GroceryTracker.Backend.Model.Db;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace GroceryTracker.Backend
@@ -37,11 +34,24 @@ namespace GroceryTracker.Backend
          var identityKey = Configuration["Identity:Key"];
 
          services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
-         services.AddSingleton<IUserAccess>(x => new UserAccess(dbConfig));
-         services.AddSingleton<IArticleAccess>(x => new ArticleAccess(dbConfig));
-         services.AddSingleton<ICategoryAccess>(x => new CategoryAccess(dbConfig));
-         services.AddSingleton<IMarketAccess>(x => new MarketAccess(dbConfig));
-         services.AddSingleton<IShoppingTripAccess>(x => new ShoppingTripAccess(dbConfig));
+
+         services.AddSingleton<IDatabaseConfiguration>(dbConfig);
+
+         services.AddSingleton<IDbEntityTypeInfo<DbAppUser>, DbEntityTypeInfo<DbAppUser>>();
+         services.AddSingleton<IDbEntityTypeInfo<DbArticle>, DbEntityTypeInfo<DbArticle>>();
+         services.AddSingleton<IDbEntityTypeInfo<DbBrand>, DbEntityTypeInfo<DbBrand>>();
+         services.AddSingleton<IDbEntityTypeInfo<DbCategory>, DbEntityTypeInfo<DbCategory>>();
+         services.AddSingleton<IDbEntityTypeInfo<DbMarket>, DbEntityTypeInfo<DbMarket>>();
+         services.AddSingleton<IDbEntityTypeInfo<DbPurchase>, DbEntityTypeInfo<DbPurchase>>();
+         services.AddSingleton<IDbEntityTypeInfo<DbShoppingTrip>, DbEntityTypeInfo<DbShoppingTrip>>();
+
+         services.AddSingleton<IUserAccess, AppUserAccess>();
+         services.AddSingleton<IArticleAccess, ArticleAccess>();
+         services.AddSingleton<IBrandAccess, BrandAccess>();
+         services.AddSingleton<ICategoryAccess, CategoryAccess>();
+         services.AddSingleton<IMarketAccess, MarketAccess>();
+         services.AddSingleton<IPurchaseAccess, PurchaseAccess>();
+         services.AddSingleton<IShoppingTripAccess, ShoppingTripAccess>();
       }
 
       // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

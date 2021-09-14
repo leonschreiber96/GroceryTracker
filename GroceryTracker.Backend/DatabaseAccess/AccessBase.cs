@@ -21,8 +21,6 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
       Task<IEnumerable<T>> GetManyAsync(Query query);
 
-      Task<IEnumerable<T>> GetAllAsync(int limit);
-
       Task Upsert(T newValue);
 
       Task Insert(T newValue);
@@ -39,14 +37,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
       protected IDbEntityTypeInfo<T> EntityTypeInfo { get; }
       protected PostgresCompiler SqlCompiler { get; }
 
-      protected AccessBase(string host, int port, string databaseName, string username, string password, IDbEntityTypeInfo<T> entityTypeInfo)
-      {
-         this.ConnectionString = $"Server={host};Port={port};Database={databaseName};User Id={username};Password={password};";
-         this.EntityTypeInfo = entityTypeInfo;
-         this.SqlCompiler = new PostgresCompiler();
-      }
-
-      protected AccessBase(DatabaseConfiguration configuration, IDbEntityTypeInfo<T> entityTypeInfo)
+      protected AccessBase(IDatabaseConfiguration configuration, IDbEntityTypeInfo<T> entityTypeInfo)
       {
          this.ConnectionString = $"Server={configuration.Hostname};Port={configuration.Port};Database={configuration.DatabaseName};User Id={configuration.Username};Password={configuration.Password};";
          this.EntityTypeInfo = entityTypeInfo;
@@ -71,18 +62,6 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var queryFactory = this.QueryFactory(connection))
          {
             var dbResult = await queryFactory.FirstOrDefaultAsync<T>(query);
-
-            return dbResult;
-         }
-      }
-
-      public async Task<IEnumerable<T>> GetAllAsync(int limit)
-      {
-         using (var connection = this.CreateConnection())
-         using (var queryFactory = this.QueryFactory(connection))
-         {
-            var query = new Query(this.EntityTypeInfo.Name).Limit(limit).GetAsync<T>();
-            var dbResult = await queryFactory.Query(this.EntityTypeInfo.Name).Limit(limit).GetAsync<T>();
 
             return dbResult;
          }

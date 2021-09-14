@@ -21,7 +21,7 @@ namespace GroceryTracker.Backend.Controllers
       [HttpGet]
       public async Task<IActionResult> GetAll([FromQuery] int limit = 30)
       {
-         var categories = await this.brandAccess.GetAllAsync(limit);
+         var categories = await this.brandAccess.GetManyAsync(limit);
 
          return Ok(categories);
       }
