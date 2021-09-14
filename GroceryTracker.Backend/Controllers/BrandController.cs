@@ -41,7 +41,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.brandAccess.Update(brand);
+            await this.brandAccess.UpdateAsync(brand);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
@@ -61,14 +61,14 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.brandAccess.Insert(brand);
+            var newId = await this.brandAccess.InsertAsync(brand);
+
+            return Created($"/brand/{newId}", "Brand info changed successfully!");
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
-
-         return Ok("Brand info changed successfully!");
       }
 
       [HttpDelete]
@@ -80,7 +80,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.brandAccess.Delete(brandId);
+            await this.brandAccess.DeleteAsync(brandId);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

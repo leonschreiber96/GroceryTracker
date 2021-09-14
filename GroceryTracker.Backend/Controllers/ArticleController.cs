@@ -27,12 +27,12 @@ namespace GroceryTracker.Backend.Controllers
 
          if (targetArticle.CategoryId != articleDto.CategoryId)
          {
-            // Validate new category
+            // TODO: Validate new category
          }
 
          if (targetArticle.BrandId != articleDto.BrandId)
          {
-            // Validate new brand
+            // TODO: Validate new brand
          }
 
          var article = new DbArticle
@@ -62,9 +62,9 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPost]
       public async Task<IActionResult> Post([FromForm] ArticleDto articleDto)
       {
-         // Validate new category
+         // TODO: Validate new category
 
-         // Validate new brand
+         // TODO: Validate new brand
 
          var article = new DbArticle
          {
@@ -79,14 +79,15 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.articleAccess.InsertAsync(article);
+            var newId = await this.articleAccess.InsertAsync(article);
+
+            return Created($"/article/{newId}", "Article created successfully!");
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Article created successfully!");
       }
 
       [HttpDelete]

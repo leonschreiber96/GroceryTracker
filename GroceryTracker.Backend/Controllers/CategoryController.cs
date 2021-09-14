@@ -75,14 +75,14 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.categoryAccess.InsertAsync(category);
+            var newId = await this.categoryAccess.InsertAsync(category);
+
+            return Created($"/category/{newId}", "Category created successfully!");
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
-
-         return Created("/category/", "Category created successfully!");
       }
 
       [HttpDelete]

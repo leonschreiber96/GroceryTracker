@@ -61,14 +61,14 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.marketAccess.InsertAsync(market);
+            var newId = await this.marketAccess.InsertAsync(market);
+
+            return Created($"/market/{newId}", "Market created successfully!");
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
-
-         return Ok("Market created successfully!");
       }
 
       [HttpDelete]

@@ -67,7 +67,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.userAccess.Update(user);
+            await this.userAccess.UpdateAsync(user);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
@@ -107,14 +107,14 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.userAccess.Insert(newUser);
+            var newId = await this.userAccess.InsertAsync(newUser);
+
+            return Created($"/user/{newId}", "User created successfully!");
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
-
-         return Ok("User created successfully!");
       }
 
       [HttpDelete]
@@ -126,7 +126,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.userAccess.Delete(userId);
+            await this.userAccess.DeleteAsync(userId);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
