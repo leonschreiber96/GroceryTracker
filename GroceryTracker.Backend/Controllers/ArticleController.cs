@@ -49,7 +49,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.articleAccess.Update(article);
+            await this.articleAccess.UpdateAsync(article);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
@@ -79,7 +79,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.articleAccess.Insert(article);
+            await this.articleAccess.InsertAsync(article);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
@@ -98,7 +98,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.articleAccess.Delete(articleId);
+            await this.articleAccess.DeleteAsync(articleId);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

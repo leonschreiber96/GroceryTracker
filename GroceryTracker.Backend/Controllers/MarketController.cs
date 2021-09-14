@@ -41,7 +41,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.marketAccess.Update(market);
+            await this.marketAccess.UpdateAsync(market);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
@@ -61,14 +61,14 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.marketAccess.Insert(market);
+            await this.marketAccess.InsertAsync(market);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Market info changed successfully!");
+         return Ok("Market created successfully!");
       }
 
       [HttpDelete]
@@ -80,7 +80,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.marketAccess.Delete(marketId);
+            await this.marketAccess.DeleteAsync(marketId);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

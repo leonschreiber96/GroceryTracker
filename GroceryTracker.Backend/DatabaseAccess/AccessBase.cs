@@ -21,13 +21,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
       Task<IEnumerable<T>> GetManyAsync(Query query);
 
-      Task Upsert(T newValue);
+      Task<int> UpsertAsync(T newValue);
 
-      Task Insert(T newValue);
+      Task<int> InsertAsync(T newValue);
 
-      Task Update(T value);
+      Task UpdateAsync(T value);
 
-      Task Delete(int id);
+      Task DeleteAsync(int id);
    }
 
    public abstract class AccessBase<T> : IAccessBase<T>
@@ -89,37 +89,35 @@ namespace GroceryTracker.Backend.DatabaseAccess
          }
       }
 
-      public async Task Insert(T newValue)
+      public async Task<int> InsertAsync(T newValue)
       {
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            var values = new Dictionary<string, string>(
-               this.EntityTypeInfo.GetValuePairs(newValue)
-               .Where(x => !string.Equals(x.Key, "id", StringComparison.OrdinalIgnoreCase))
-            );
+            // var values = new Dictionary<string, string>(
+            //    this.EntityTypeInfo.GetValuePairs(newValue)
+            //    .Where(x => !string.Equals(x.Key, "id", StringComparison.OrdinalIgnoreCase))
+            // );
 
-            var fieldNames = values.Keys.ToList();
-            var fieldValues = values.Values.Select(x => x ?? "").ToList();
+            // var fieldNames = values.Keys.ToList();
+            // var fieldValues = values.Values.Select(x => x ?? "").ToList();
 
-            var sb = new StringBuilder($"INSERT INTO {this.EntityTypeInfo.Name} (");
-            sb.Append(string.Join(',', fieldNames));
-            sb.Append(") VALUES (");
-            sb.Append(string.Join(',', fieldValues));
-            sb.Append($");");
+            // Remove id value so that a new id can be chosen by the database
+            // TODO: don't hardcode id field name
+            var values = this.EntityTypeInfo.GetValues(newValue).Where(x => x.Key != "Id");
 
-            var sql = sb.ToString();
+            var newId = await queryFactory.Query(this.EntityTypeInfo.Name).InsertGetIdAsync<int>(values);
 
-            await connection.ExecuteAsync(sql, newValue);
+            return newId;
          }
       }
 
-      public async Task Update(T value)
+      public async Task UpdateAsync(T value)
       {
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            var values = this.EntityTypeInfo.GetValuePairs(value);
+            var values = this.EntityTypeInfo.GetStringValues(value);
             var fieldNames = values.Keys.ToList();
             var fieldValues = values.Values.Select(x => x ?? "").ToList();
 
@@ -139,36 +137,40 @@ namespace GroceryTracker.Backend.DatabaseAccess
          }
       }
 
-      public async Task Upsert(T newValue)
+      public async Task<int> UpsertAsync(T newValue)
       {
-         using (var connection = this.CreateConnection())
-         using (var queryFactory = this.QueryFactory(connection))
-         {
-            var values = this.EntityTypeInfo.GetValuePairs(newValue);
-            var fieldNames = values.Keys.ToList();
-            var fieldValues = values.Values.Select(x => x ?? "").ToList();
+         // using (var connection = this.CreateConnection())
+         // using (var queryFactory = this.QueryFactory(connection))
+         // {
+         //    var values = this.EntityTypeInfo.GetStringValues(newValue);
+         //    var fieldNames = values.Keys.ToList();
+         //    var fieldValues = values.Values.Select(x => x ?? "").ToList();
 
-            var sb = new StringBuilder($"INSERT INTO {this.EntityTypeInfo.Name} (");
-            sb.Append(string.Join(',', fieldNames));
-            sb.Append(") VALUES (");
-            sb.Append(string.Join(',', fieldValues));
-            sb.Append($") ON CONFLICT (id) DO UPDATE ");
-            sb.Append($"SET {fieldNames[0]} = {fieldValues[0]}");
+         //    var sb = new StringBuilder($"INSERT INTO {this.EntityTypeInfo.Name} (");
+         //    sb.Append(string.Join(',', fieldNames));
+         //    sb.Append(") VALUES (");
+         //    sb.Append(string.Join(',', fieldValues));
+         //    sb.Append($") ON CONFLICT (id) DO UPDATE ");
+         //    sb.Append($"SET {fieldNames[0]} = {fieldValues[0]}");
 
-            for (int i = 1; i < fieldNames.Count; i++)
-            {
-               sb.Append($",{fieldNames[i]}  = {fieldValues[i]} ");
-            }
+         //    for (int i = 1; i < fieldNames.Count; i++)
+         //    {
+         //       sb.Append($",{fieldNames[i]}  = {fieldValues[i]} ");
+         //    }
 
-            sb.Append($"WHERE {this.EntityTypeInfo.Name}.id = {values["id"]};");
+         //    sb.Append($"WHERE {this.EntityTypeInfo.Name}.id = {values["id"]};");
 
-            var sql = sb.ToString();
+         //    var sql = sb.ToString();
 
-            await connection.ExecuteAsync(sql, newValue);
-         }
+         //    await connection.ExecuteAsync(sql, newValue);
+         // }
+
+         var tcs = new TaskCompletionSource<int>();
+         tcs.SetException(new NotImplementedException());
+         return await tcs.Task;
       }
 
-      public async Task Delete(int id)
+      public async Task DeleteAsync(int id)
       {
          using (var connection = this.CreateConnection())
          {

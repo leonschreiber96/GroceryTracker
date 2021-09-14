@@ -48,7 +48,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.categoryAccess.Update(category);
+            await this.categoryAccess.UpdateAsync(category);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
@@ -75,14 +75,14 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.categoryAccess.Insert(category);
+            await this.categoryAccess.InsertAsync(category);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {
             return StatusCode(501, ex.Message);
          }
 
-         return Ok("Category created successfully!");
+         return Created("/category/", "Category created successfully!");
       }
 
       [HttpDelete]
@@ -94,7 +94,7 @@ namespace GroceryTracker.Backend.Controllers
 
          try
          {
-            await this.categoryAccess.Delete(categoryId);
+            await this.categoryAccess.DeleteAsync(categoryId);
          }
          catch (Exception ex) when (Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT") != "Development")
          {

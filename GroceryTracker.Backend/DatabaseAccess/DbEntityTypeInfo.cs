@@ -23,7 +23,20 @@ namespace GroceryTracker.Backend.DatabaseAccess
       /// Get a dictionary with all values of the entity type's fields, indexed with their names
       /// </summary>
       /// <param name="entity">The entity whose values you want to retrieve</param>
-      Dictionary<string, string> GetValuePairs(T entity);
+      Dictionary<string, object> GetValues(T entity);
+
+      /// <summary>
+      /// Get a dictionary with all STRINGIFIED values of the entity type's fields, indexed with their names
+      /// </summary>
+      /// <param name="entity">The entity whose values you want to retrieve</param>
+      Dictionary<string, string> GetStringValues(T entity);
+
+      /// <summary>
+      /// Gets the full descriptor of an entity field (i.e. 'user.first_name' instead of 'first_name').
+      /// </summary>
+      /// <param name="propName">Key of the required field -> PascalCase C#-style property name from nameof(...).</param>
+      /// <exception cref="ArgumentException">Thrown if no field of the entity type matches the provided string.</exception>
+      string FullPropPath(string propName);
    }
 
    public class DbEntityTypeInfo<T> : IDbEntityTypeInfo<T>
@@ -47,7 +60,29 @@ namespace GroceryTracker.Backend.DatabaseAccess
             propertyNames.Select(x => new KeyValuePair<string, string>(x, x.PascalToKebab())));
       }
 
-      public Dictionary<string, string> GetValuePairs(T entity)
+      public string FullPropPath(string propName)
+      {
+         if (!this.Props.ContainsKey(propName)) throw new ArgumentException("Provided prop name does not exist on the entity type");
+
+         return $"{this.Name}.{this.Props[propName]}";
+      }
+
+      public Dictionary<string, object> GetValues(T entity)
+      {
+         var retVal = new Dictionary<string, object>();
+
+         foreach (var prop in this.Props)
+         {
+            var name = prop.Value;
+            var value = getPropValue(entity, prop.Key);
+
+            retVal.Add(name, value);
+         }
+
+         return retVal;
+      }
+
+      public Dictionary<string, string> GetStringValues(T entity)
       {
          var retVal = new Dictionary<string, string>();
 

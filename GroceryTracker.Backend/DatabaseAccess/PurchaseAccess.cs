@@ -4,32 +4,26 @@ using System.Threading.Tasks;
 using GroceryTracker.Backend.Model.Db;
 using GroceryTracker.Backend.Model.Dto;
 using SqlKata;
+using SqlKata.Execution;
 
 namespace GroceryTracker.Backend.DatabaseAccess
 {
    public interface IPurchaseAccess : IAccessBase<DbPurchase>
    {
-      Task<PurchaseDto> GetSingleDetailed(int id);
-
       Task<IEnumerable<DbPurchase>> GetAllAsync(int? limit = 30);
    }
 
    public class PurchaseAccess : AccessBase<DbPurchase>, IPurchaseAccess
    {
-      private readonly IDbEntityTypeInfo<DbArticle> articleEntityTypeInfo;
-      private readonly IDbEntityTypeInfo<DbMarket> marketEntityTypeInfo;
+      private readonly IDbEntityTypeInfo<DbArticle> articleEtInfo;
+      private readonly IDbEntityTypeInfo<DbShoppingTrip> tripEtInfo;
 
       public PurchaseAccess(IDatabaseConfiguration configuration,
-      IDbEntityTypeInfo<DbPurchase> entityTypeInfo, IDbEntityTypeInfo<DbArticle> articleEntityTypeInfo, IDbEntityTypeInfo<DbMarket> marketEntityTypeInfo)
-      : base(configuration, entityTypeInfo)
+      IDbEntityTypeInfo<DbPurchase> etInfo, IDbEntityTypeInfo<DbArticle> articleEtInfo, IDbEntityTypeInfo<DbShoppingTrip> tripEtInfo)
+      : base(configuration, etInfo)
       {
-         this.articleEntityTypeInfo = articleEntityTypeInfo;
-         this.marketEntityTypeInfo = marketEntityTypeInfo;
-      }
-
-      public async Task<PurchaseDto> GetSingleDetailed(int id)
-      {
-         throw new NotImplementedException();
+         this.articleEtInfo = articleEtInfo;
+         this.tripEtInfo = tripEtInfo;
       }
 
       public async Task<IEnumerable<DbPurchase>> GetAllAsync(int? limit = 30)
