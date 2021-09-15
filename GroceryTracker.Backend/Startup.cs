@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 using GroceryTracker.Backend.Auth;
 using GroceryTracker.Backend.DatabaseAccess;
 using GroceryTracker.Backend.Model.Db;
@@ -23,7 +24,11 @@ namespace GroceryTracker.Backend
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services)
       {
-         services.AddControllers();
+         services.AddControllers().AddJsonOptions(options =>
+         {
+            var enumConverter = new JsonStringEnumConverter();
+            options.JsonSerializerOptions.Converters.Add(enumConverter);
+         });
          services.AddSwaggerGen(c =>
          {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "GroceryTracker.Backend", Version = "v1" });

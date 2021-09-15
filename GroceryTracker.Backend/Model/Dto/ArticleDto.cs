@@ -14,7 +14,7 @@ namespace GroceryTracker.Backend.Model.Dto
 
       public double? Pfand { get; set; }
 
-      public List<string> Tags { get; set; }
+      public string[] Tags { get; set; }
 
       public int CategoryId { get; set; }
 

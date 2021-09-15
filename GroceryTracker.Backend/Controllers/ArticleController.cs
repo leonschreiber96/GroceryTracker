@@ -12,10 +12,14 @@ namespace GroceryTracker.Backend.Controllers
    public class ArticleController : ControllerBase
    {
       private readonly IArticleAccess articleAccess;
+      private readonly ICategoryAccess categoryAccess;
+      private readonly IBrandAccess brandAccess;
 
-      public ArticleController(IArticleAccess articleAccess)
+      public ArticleController(IArticleAccess articleAccess, ICategoryAccess categoryAccess, IBrandAccess brandAccess)
       {
          this.articleAccess = articleAccess;
+         this.categoryAccess = categoryAccess;
+         this.brandAccess = brandAccess;
       }
 
       [HttpPut]
@@ -27,12 +31,12 @@ namespace GroceryTracker.Backend.Controllers
 
          if (targetArticle.CategoryId != articleDto.CategoryId)
          {
-            // TODO: Validate new category
+            if (!await this.categoryAccess.ExistsAsync(articleDto.CategoryId)) return NotFound("Provided category does not exist in the database.");
          }
 
-         if (targetArticle.BrandId != articleDto.BrandId)
+         if (targetArticle.BrandId != articleDto.BrandId && articleDto.BrandId != null)
          {
-            // TODO: Validate new brand
+            if (!await this.brandAccess.ExistsAsync((int)articleDto.BrandId)) return NotFound("Provided brand does not exist in the database.");
          }
 
          var article = new DbArticle
@@ -42,9 +46,9 @@ namespace GroceryTracker.Backend.Controllers
             BrandId = articleDto.BrandId,
             CategoryId = articleDto.CategoryId,
             Details = articleDto.Details,
-            OwnerId = articleDto.OwnerId,
             Pfand = articleDto.Pfand,
-            Tags = articleDto.Tags
+            Tags = articleDto.Tags,
+            OwnerId = 1
          };
 
          try
@@ -62,9 +66,8 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPost]
       public async Task<IActionResult> Post([FromForm] ArticleDto articleDto)
       {
-         // TODO: Validate new category
-
-         // TODO: Validate new brand
+         if (!await this.categoryAccess.ExistsAsync(articleDto.CategoryId)) return NotFound("Provided category does not exist in database.");
+         if (!await this.brandAccess.ExistsAsync((int)articleDto.BrandId)) return NotFound("Provided brand does not exist in database.");
 
          var article = new DbArticle
          {
@@ -72,9 +75,9 @@ namespace GroceryTracker.Backend.Controllers
             BrandId = articleDto.BrandId,
             CategoryId = articleDto.CategoryId,
             Details = articleDto.Details,
-            OwnerId = articleDto.OwnerId,
             Pfand = articleDto.Pfand,
-            Tags = articleDto.Tags
+            Tags = articleDto.Tags,
+            OwnerId = 1
          };
 
          try
@@ -87,7 +90,6 @@ namespace GroceryTracker.Backend.Controllers
          {
             return StatusCode(501, ex.Message);
          }
-
       }
 
       [HttpDelete]

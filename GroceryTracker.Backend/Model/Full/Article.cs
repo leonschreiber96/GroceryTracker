@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using GroceryTracker.Backend.Model.Db;
 
 namespace GroceryTracker.Backend.Model.Full
@@ -11,7 +12,7 @@ namespace GroceryTracker.Backend.Model.Full
          this.Name = dbObject.Name;
          this.Pfand = dbObject.Pfand;
          this.Details = dbObject.Details;
-         this.Tags = dbObject.Tags;
+         this.Tags = dbObject.Tags.ToList();
          this.OwnerId = dbObject.OwnerId;
          this.Category = category;
          this.Brand = brand;

@@ -28,6 +28,8 @@ namespace GroceryTracker.Backend.DatabaseAccess
       Task UpdateAsync(T value);
 
       Task DeleteAsync(int id);
+
+      Task<bool> ExistsAsync(int id);
    }
 
    public abstract class AccessBase<T> : IAccessBase<T>
@@ -182,6 +184,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
             await connection.ExecuteAsync(sql);
          }
+      }
+
+      public async Task<bool> ExistsAsync(int id)
+      {
+         var query = new Query(this.EntityTypeInfo.Name).Where("id", id);
+
+         return (await this.GetSingleAsync(query)) == null;
       }
 
       protected NpgsqlConnection CreateConnection() => new NpgsqlConnection(this.ConnectionString);

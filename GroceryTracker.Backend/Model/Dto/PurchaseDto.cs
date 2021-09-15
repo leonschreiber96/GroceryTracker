@@ -4,13 +4,9 @@ namespace GroceryTracker.Backend.Model.Dto
 {
    public class PurchaseDto
    {
-      public int PurchaseId { get; set; }
-
       public int TripId { get; set; }
 
-      public ArticleDto Article { get; set; }
-
-      public ShoppingTripMetaDto ShoppingTrip { get; set; }
+      public int ArticleId { get; set; }
 
       public double Quantity { get; set; }
 

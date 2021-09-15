@@ -64,14 +64,15 @@ namespace GroceryTracker.Backend.DatabaseAccess
             var article = new Article(dbArticle, category, brand);
             var market = new Market(dbMarket);
             var trip = new ShoppingTrip(dbTrip, market, null);
-            var purchase = new Purchase(dbPurchase, trip, article);
+            var purchase = new Purchase(dbPurchase, null, article);
 
             return (trip, purchase);
          }
 
          using (var connection = this.CreateConnection())
          {
-            var dbResult = await connection.QueryAsync<DbShoppingTrip, DbMarket, DbPurchase, DbArticle, DbBrand, DbCategory, (ShoppingTrip Trip, Purchase Purchase)>("", mapper);
+            var dbResult = await connection.QueryAsync<DbShoppingTrip, DbMarket, DbPurchase, DbArticle, DbBrand, DbCategory, (ShoppingTrip Trip, Purchase Purchase)>
+                           (sql.Sql, mapper, param: new { p0 = id }, splitOn: "id,article_id,id,id,id");
 
             if (dbResult.Count() == 0) return null;
 

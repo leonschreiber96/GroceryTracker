@@ -43,7 +43,8 @@ namespace GroceryTracker.Backend.Controllers
          {
             Id = categoryDto.CategoryId,
             Name = categoryDto.Name ?? targetCategory.Name,
-            ParentId = categoryDto.Parent ?? targetCategory.ParentId
+            ParentId = categoryDto.Parent ?? targetCategory.ParentId,
+            OwnerId = 1
          };
 
          try
@@ -70,7 +71,8 @@ namespace GroceryTracker.Backend.Controllers
          var category = new DbCategory
          {
             Name = categoryDto.Name,
-            ParentId = categoryDto.Parent
+            ParentId = categoryDto.Parent,
+            OwnerId = 1
          };
 
          try

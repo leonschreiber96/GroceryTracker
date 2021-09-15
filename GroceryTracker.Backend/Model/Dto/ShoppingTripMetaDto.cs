@@ -10,6 +10,6 @@ namespace GroceryTracker.Backend.Model.Dto
 
       public DateTime Timestamp { get; set; }
 
-      public int Market { get; set; }
+      public int MarketId { get; set; }
    }
 }

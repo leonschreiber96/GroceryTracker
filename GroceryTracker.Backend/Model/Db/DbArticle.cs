@@ -14,7 +14,7 @@ namespace GroceryTracker.Backend.Model.Db
 
       public string Details { get; set; }
 
-      public List<string> Tags { get; set; }
+      public string[] Tags { get; set; }
 
       public int CategoryId { get; set; }
 

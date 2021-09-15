@@ -37,6 +37,7 @@ namespace GroceryTracker.Backend.Controllers
          {
             Id = marketDto.MarketId,
             Name = marketDto.Name,
+            OwnerId = 1
          };
 
          try
@@ -56,7 +57,8 @@ namespace GroceryTracker.Backend.Controllers
       {
          var market = new DbMarket
          {
-            Name = marketDto.Name
+            Name = marketDto.Name,
+            OwnerId = 1
          };
 
          try
