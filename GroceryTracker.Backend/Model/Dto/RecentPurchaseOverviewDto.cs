@@ -1,11 +1,10 @@
 using System;
-using GroceryTracker.Backend.Model.Db;
 
 namespace GroceryTracker.Backend.Model.Dto
 {
-   public class PurchaseOverviewDto
+   public class RecentPurchaseOverviewDto
    {
-      DateTime Timestamp { get; set; }
+      public DateTime Timestamp { get; set; }
 
       public string ArticleName { get; set; }
 

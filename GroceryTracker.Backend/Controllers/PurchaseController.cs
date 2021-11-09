@@ -26,14 +26,16 @@ namespace GroceryTracker.Backend.Controllers
       [Route("frequent")]
       public async Task<IActionResult> GetFrequent([FromQuery] int marketId, [FromQuery] int limit = 30)
       {
-         throw new NotImplementedException();
+         var frequent = await purchaseAccess.GetFrequentAsync(marketId, limit);
+         return Ok(frequent);
       }
 
       [HttpGet]
       [Route("recent")]
       public async Task<IActionResult> GetRecent([FromQuery] int marketId, [FromQuery] int limit = 30)
       {
-         throw new NotImplementedException();
+         var recent = await purchaseAccess.GetRecentAsync(marketId, limit);
+         return Ok(recent);
       }
 
       [HttpPut]

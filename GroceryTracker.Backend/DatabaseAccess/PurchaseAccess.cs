@@ -13,9 +13,9 @@ namespace GroceryTracker.Backend.DatabaseAccess
    {
       Task<IEnumerable<DbPurchase>> GetAllAsync(int limit = 30);
 
-      Task<IEnumerable<PurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30);
+      Task<IEnumerable<RecentPurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30);
 
-      Task<IEnumerable<PurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30);
+      Task<IEnumerable<FrequentPurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30);
    }
 
    public class PurchaseAccess : AccessBase<DbPurchase>, IPurchaseAccess
@@ -45,13 +45,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
          return dbResult;
       }
 
-      public async Task<IEnumerable<PurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30)
+      public async Task<IEnumerable<RecentPurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30)
       {
          var selectColumns = new string[]
          {
             this.tripEtInfo.FullPropPath(nameof(DbShoppingTrip.Timestamp)),
-            this.articleEtInfo.FullPropPath(nameof(DbArticle.Name)),
-            this.brandEtInfo.FullPropPath(nameof(DbBrand.Name)),
+            this.articleEtInfo.FullPropPath(nameof(DbArticle.Name)) + " as ArticleName",
+            this.brandEtInfo.FullPropPath(nameof(DbBrand.Name)) + " as BrandName",
             this.articleEtInfo.FullPropPath(nameof(DbArticle.Details))
          };
 
@@ -62,43 +62,48 @@ namespace GroceryTracker.Backend.DatabaseAccess
             .OrderByDesc(this.tripEtInfo.FullPropPath(nameof(ShoppingTrip.Timestamp)))
             .Limit(limit)
             .Join(this.articleEtInfo.Name, this.articleEtInfo.FullPropPath(nameof(DbArticle.Id)), this.EntityTypeInfo.FullPropPath(nameof(DbPurchase.ArticleId)))
-            .Join(this.brandEtInfo.Name, this.brandEtInfo.FullPropPath(nameof(DbBrand.Id)), this.articleEtInfo.FullPropPath(nameof(DbArticle.BrandId)));
+            .LeftJoin(this.brandEtInfo.Name, this.brandEtInfo.FullPropPath(nameof(DbBrand.Id)), this.articleEtInfo.FullPropPath(nameof(DbArticle.BrandId)));
 
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            var dbResult = await queryFactory.FromQuery(query).GetAsync<PurchaseOverviewDto>();
+            var dbResult = await queryFactory.FromQuery(query).GetAsync<RecentPurchaseOverviewDto>();
 
             return dbResult;
          }
       }
 
-      public async Task<IEnumerable<PurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30)
+      public async Task<IEnumerable<FrequentPurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30)
       {
          var selectColumns = new string[]
          {
-            this.tripEtInfo.FullPropPath(nameof(DbShoppingTrip.Timestamp)),
-            this.articleEtInfo.FullPropPath(nameof(DbArticle.Name)),
-            this.brandEtInfo.FullPropPath(nameof(DbBrand.Name)),
+            this.articleEtInfo.FullPropPath(nameof(DbArticle.Name)) + " as ArticleName",
+            this.brandEtInfo.FullPropPath(nameof(DbBrand.Name)) + " as BrandName",
             this.articleEtInfo.FullPropPath(nameof(DbArticle.Details))
          };
 
-         // select count(a.id), a.name, b.name from(select* from purchase p
-         // join shopping_trip s on p.trip_id = s.id
-         // where s.market_id = 1) x
-         // join article a on x.article_id = a.id
-         // left join brand b on a.brand_id = b.id
-         // group by a.id, b.id
-         // order by count desc
-         // limit 4
+         var subQuery = new Query(this.EntityTypeInfo.Name)
+            .Join(this.tripEtInfo.Name, this.tripEtInfo.FullPropPath(nameof(DbShoppingTrip.Id)), this.EntityTypeInfo.FullPropPath(nameof(DbPurchase.TripId)))
+            .Where(this.tripEtInfo.FullPropPath(nameof(DbShoppingTrip.MarketId)), marketId);
 
-         // using (var connection = this.CreateConnection())
-         // using (var queryFactory = this.QueryFactory(connection))
-         // {
-         //    var dbResult = await queryFactory.FromQuery(query).GetAsync<PurchaseOverviewDto>();
+         var query = new Query()
+            .From(subQuery, "x")
+            .SelectRaw($"count ({this.articleEtInfo.FullPropPath(nameof(DbArticle.Id))}) as PurchaseCount")
+            .Select(selectColumns)
+            .Join(this.articleEtInfo.Name, "x." + this.EntityTypeInfo.Props[nameof(DbPurchase.ArticleId)], this.articleEtInfo.FullPropPath(nameof(DbArticle.Id)))
+            .LeftJoin(this.brandEtInfo.Name, this.articleEtInfo.FullPropPath(nameof(DbArticle.BrandId)), this.brandEtInfo.FullPropPath(nameof(DbBrand.Id)))
+            .GroupBy(this.articleEtInfo.FullPropPath(nameof(DbArticle.Id)), this.brandEtInfo.FullPropPath(nameof(DbBrand.Id)))
+            .OrderByRaw("PurchaseCount DESC")
+            .Limit(30);
 
-         //    return dbResult;
-         // }
+         using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
+         {
+            Console.WriteLine(queryFactory.Compiler.Compile(query).RawSql);
+            var dbResult = await queryFactory.FromQuery(query).GetAsync<FrequentPurchaseOverviewDto>();
+
+            return dbResult;
+         }
 
          throw new NotImplementedException();
       }
