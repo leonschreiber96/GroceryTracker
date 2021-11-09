@@ -41,19 +41,25 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> EditPurchase([FromBody] PurchaseDto purchaseDto)
       {
-         throw new NotImplementedException();
+         var tcs = new TaskCompletionSource<IActionResult>();
+         tcs.SetException(new NotImplementedException());
+         return await tcs.Task;
       }
 
       [HttpPost]
       public async Task<IActionResult> AddPurchaseToTrip([FromQuery] int tripId, [FromBody] PurchaseDto purchaseDto)
       {
-         throw new NotImplementedException();
+         var tcs = new TaskCompletionSource<IActionResult>();
+         tcs.SetException(new NotImplementedException());
+         return await tcs.Task;
       }
 
       [HttpDelete]
       public async Task<IActionResult> RemovePurchaseFromTrip([FromQuery] int tripId, [FromQuery] int purchaseId)
       {
-         throw new NotImplementedException();
+         var tcs = new TaskCompletionSource<IActionResult>();
+         tcs.SetException(new NotImplementedException());
+         return await tcs.Task;
       }
    }
 }

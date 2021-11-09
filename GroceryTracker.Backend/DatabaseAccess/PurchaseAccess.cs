@@ -99,7 +99,6 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            Console.WriteLine(queryFactory.Compiler.Compile(query).RawSql);
             var dbResult = await queryFactory.FromQuery(query).GetAsync<FrequentPurchaseOverviewDto>();
 
             return dbResult;
