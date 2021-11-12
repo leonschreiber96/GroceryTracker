@@ -13,9 +13,9 @@ namespace GroceryTracker.Backend.DatabaseAccess
    {
       Task<IEnumerable<DbPurchase>> GetAllAsync(int limit = 30);
 
-      Task<IEnumerable<RecentPurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30);
+      Task<IEnumerable<PurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30);
 
-      Task<IEnumerable<FrequentPurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30);
+      Task<IEnumerable<PurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30);
    }
 
    public class PurchaseAccess : AccessBase<DbPurchase>, IPurchaseAccess
@@ -25,10 +25,10 @@ namespace GroceryTracker.Backend.DatabaseAccess
       private readonly IDbEntityTypeInfo<DbBrand> brandEtInfo;
 
       public PurchaseAccess(IDatabaseConfiguration configuration,
-      IDbEntityTypeInfo<DbPurchase> etInfo,
-      IDbEntityTypeInfo<DbArticle> articleEtInfo,
-      IDbEntityTypeInfo<DbShoppingTrip> tripEtInfo,
-      IDbEntityTypeInfo<DbBrand> brandEtInfo)
+         IDbEntityTypeInfo<DbPurchase> etInfo,
+         IDbEntityTypeInfo<DbArticle> articleEtInfo,
+         IDbEntityTypeInfo<DbShoppingTrip> tripEtInfo,
+         IDbEntityTypeInfo<DbBrand> brandEtInfo)
       : base(configuration, etInfo)
       {
          this.articleEtInfo = articleEtInfo;
@@ -45,7 +45,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
          return dbResult;
       }
 
-      public async Task<IEnumerable<RecentPurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30)
+      public async Task<IEnumerable<PurchaseOverviewDto>> GetRecentAsync(int marketId, int limit = 30)
       {
          var selectColumns = new string[]
          {
@@ -67,13 +67,13 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            var dbResult = await queryFactory.FromQuery(query).GetAsync<RecentPurchaseOverviewDto>();
+            var dbResult = await queryFactory.FromQuery(query).GetAsync<PurchaseOverviewDto>();
 
             return dbResult;
          }
       }
 
-      public async Task<IEnumerable<FrequentPurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30)
+      public async Task<IEnumerable<PurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30)
       {
          var selectColumns = new string[]
          {
@@ -99,7 +99,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
-            var dbResult = await queryFactory.FromQuery(query).GetAsync<FrequentPurchaseOverviewDto>();
+            var dbResult = await queryFactory.FromQuery(query).GetAsync<PurchaseOverviewDto>();
 
             return dbResult;
          }

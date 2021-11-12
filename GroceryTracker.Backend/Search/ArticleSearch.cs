@@ -15,5 +15,7 @@ namespace GroceryTracker.Backend.Search
       public string Details { get; set; }
 
       public string DynamicSearchString { get; set; }
+
+      public int ResultLimit { get; set; }
    }
 }

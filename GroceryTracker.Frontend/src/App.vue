@@ -7,11 +7,23 @@
 </template>
 
 <style lang="scss">
+body {
+   background: #e5e5e5;
+   margin: 0;
+
+   /* overflow: hidden; */
+}
+
 #app {
-   font-family: Avenir, Helvetica, Arial, sans-serif;
+   height: 100vh;
+   max-height: 100%;
+
+   font-family: Roboto, Avenir, Helvetica, Arial, sans-serif;
    -webkit-font-smoothing: antialiased;
    -moz-osx-font-smoothing: grayscale;
    text-align: center;
+
+   background-color: inherit;
    color: #2c3e50;
 }
 
