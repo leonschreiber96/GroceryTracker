@@ -1,9 +1,11 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Dapper;
+using GroceryTracker.Backend.ExtensionMethods;
 using Npgsql;
 using SqlKata;
 using SqlKata.Compilers;
@@ -191,6 +193,35 @@ namespace GroceryTracker.Backend.DatabaseAccess
          var query = new Query(this.EntityTypeInfo.Name).Where("id", id);
 
          return (await this.GetSingleAsync(query)) == null;
+      }
+
+      public async Task<IEnumerable<ReturnType>> Function<ReturnType>(string functionName, params object[] parameters)
+      {
+         var parameterString = string.Join(",", parameters.Select(parameter =>
+         {
+            if (parameter.IsNumeric() || parameter is bool || parameter is null) return parameter?.ToString() ?? "NULL";
+            else if (parameter is IEnumerable && !(parameter is string))
+            {
+               var sb = new StringBuilder("'{");
+               foreach (var val in parameter as IEnumerable)
+               {
+                  sb.Append($"\"{val.ToString()}\",");
+               }
+               sb.Remove(sb.Length - 1, 1);
+               sb.Append("}'");
+
+               return sb.ToString();
+            }
+            else return $"'{parameter}'";
+         }));
+
+         using (var connection = this.CreateConnection())
+         {
+            var sql = $"SELECT * FROM {functionName}({parameterString})";
+            var dbResult = await connection.QueryAsync<ReturnType>(sql);
+
+            return dbResult;
+         }
       }
 
       protected NpgsqlConnection CreateConnection() => new NpgsqlConnection(this.ConnectionString);

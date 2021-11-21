@@ -1,5 +1,6 @@
 
 using System.Collections.Generic;
+using GroceryTracker.Backend.DatabaseAccess.Enum;
 using GroceryTracker.Backend.Search;
 
 namespace GroceryTracker.Backend.Model.Dto
@@ -12,6 +13,8 @@ namespace GroceryTracker.Backend.Model.Dto
 
    public class SearchResultDto
    {
+      public int Id { get; set; }
+
       public string ArticleName { get; set; }
 
       public string Details { get; set; }
@@ -19,6 +22,14 @@ namespace GroceryTracker.Backend.Model.Dto
       public string BrandName { get; set; }
 
       public string CategoryName { get; set; }
+
+      public SearchMatchType ArticleMatch { get; set; }
+
+      public SearchMatchType DetailsMatch { get; set; }
+
+      public SearchMatchType BrandMatch { get; set; }
+
+      public SearchMatchType CategoryMatch { get; set; }
 
       public double LastPrice { get; set; }
 

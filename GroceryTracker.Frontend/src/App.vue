@@ -11,7 +11,7 @@ body {
    background: #e5e5e5;
    margin: 0;
 
-   /* overflow: hidden; */
+   overflow: hidden;
 }
 
 #app {

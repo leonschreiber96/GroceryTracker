@@ -1,30 +1,99 @@
 <template>
-   <div id="search-result-container" style="margin-top: 150px">
-      <ul>
-         <li v-for="(result, index) in results" :key="index">{{ result.articleName }} - {{ result.details }} ({{ result.brandName }})</li>
-      </ul>
+   <div class="search-result-container" style="margin-top: 150px">
+      <!-- <div style="background: red; height: 200px; position: absolute"></div> -->
+      <table>
+         <thead>
+            <tr>
+               <td>Artikel</td>
+               <td>Details</td>
+               <td>Marke</td>
+               <td>Kategorie</td>
+               <td>Preis Zuletzt/Durchschnitt</td>
+            </tr>
+         </thead>
+         <tbody>
+            <tr>
+               <td class="btn-new-article" colspan="5">
+                  <div>Neuen Artikel hinzufügen</div>
+               </td>
+            </tr>
+            <search-result :result="result" :search="search" v-for="(result, index) in results" :key="index" />
+         </tbody>
+      </table>
    </div>
 </template>
 
 <script lang="ts">
-import { Options, Prop, Vue, Watch } from "vue-property-decorator";
-import { SearchResultDto } from "../../dtos/searchResultsDto";
+import { Options, Prop, Vue } from "vue-property-decorator";
+import { Search, SearchResultDto } from "../../dtos/searchResultsDto";
+import SearchResult from "./searchResult.vue";
 
 @Options({
-   components: {},
+   components: { SearchResult },
    name: "SearchResultContainer",
 })
 export default class SearchResultContainer extends Vue {
    @Prop({ default: [] })
    results!: SearchResultDto[];
+
+   @Prop()
+   search!: Search;
 }
 </script>
 
-<style scoped>
-.suggestions-container {
+<style lang="scss" scoped>
+.search-result-container {
+   margin: 0 3em;
+
    display: flex;
    flex-direction: row;
    justify-content: center;
    align-items: center;
+
+   background-color: inherit;
+}
+
+.btn-new-article {
+   border-radius: 5px;
+   border-radius: 6px;
+
+   background-image: url("data:image/svg+xml,%3csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3e%3crect width='100%25' height='100%25' fill='none' rx='6' ry='6' stroke='gray' stroke-width='4' stroke-dasharray='10%2c10' stroke-dashoffset='16' stroke-linecap='round'/%3e%3c/svg%3e");
+
+   line-height: 2.5em;
+
+   cursor: pointer;
+   text-align: center;
+
+   div {
+      padding: 1em 0;
+      line-height: 100%;
+   }
+
+   &:hover {
+      background-color: #d2d2d2;
+   }
+}
+
+table {
+   border-spacing: 0 5px;
+
+   background-color: inherit;
+   text-align: left;
+}
+
+thead {
+   background-color: inherit;
+   font-size: 1.3em;
+   font-weight: bold;
+
+   td {
+      padding: 0.5em 0;
+   }
+}
+
+tbody:before {
+   line-height: 1em;
+   content: "\200C";
+   display: block;
 }
 </style>

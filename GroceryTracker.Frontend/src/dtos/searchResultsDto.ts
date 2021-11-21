@@ -18,6 +18,16 @@ export interface SearchResultDto {
    brandName: string;
    details: string;
    categoryName: string;
+   articleMatch: SearchMatchType;
+   detailsMatch: SearchMatchType;
+   brandMatch: SearchMatchType;
+   categoryMatch: SearchMatchType;
    lastPrice: number;
    averagePrice: number;
+}
+
+export enum SearchMatchType {
+   Query,
+   Dynamic,
+   NoMatch,
 }

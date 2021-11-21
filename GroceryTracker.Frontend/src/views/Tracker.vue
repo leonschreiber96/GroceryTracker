@@ -8,7 +8,7 @@
             <suggestions-container id="suggestions-container" @LeaveTop="focusSearch()" :openForSelection="true" v-if="searchText == ''" />
          </keep-alive>
          <keep-alive>
-            <search-result-container v-if="searchText != ''" :results="searchResults.results" />
+            <search-result-container v-if="searchText != ''" :results="searchResults.results" :search="searchResults.search" />
          </keep-alive>
       </div>
       <div id="tracker-side">Warenkorb</div>
