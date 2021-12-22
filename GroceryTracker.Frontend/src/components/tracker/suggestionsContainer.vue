@@ -19,6 +19,7 @@ import Suggestions from "./suggestions.vue";
 export default class SuggestionsContainer extends Vue {
    private recent: Suggestion[] = [];
    private frequent: Suggestion[] = [];
+   private selected?: Suggestion = undefined;
 
    @Prop({ default: false })
    openForSelection!: boolean;
@@ -33,24 +34,28 @@ export default class SuggestionsContainer extends Vue {
          document.addEventListener("keydown", this.onKeyDown);
       } else {
          document.removeEventListener("keydown", this.onKeyDown);
+         this.selected = undefined;
+         this.recent.forEach((x) => (x.selected = false));
+         this.frequent.forEach((x) => (x.selected = false));
       }
    }
 
-   async created() {
+   public async created() {
       await this.fetchSuggestions();
    }
 
-   activated() {
+   public activated() {
       if (this.openForSelection) {
          document.addEventListener("keydown", this.onKeyDown);
       }
    }
 
-   deactivated() {
+   public deactivated() {
       document.removeEventListener("keydown", this.onKeyDown);
    }
 
    private onKeyDown(event: KeyboardEvent) {
+      console.log("lel");
       event.stopPropagation();
       if ([...this.frequent, ...this.recent].some((s) => s.selected)) {
          let recentIndex = this.recent.findIndex((s) => s.selected);
@@ -64,23 +69,38 @@ export default class SuggestionsContainer extends Vue {
             selectingList[index].selected = false;
             index = (index + 1) % selectingList.length;
             selectingList[index].selected = true;
+            this.selected = selectingList[index];
          } else if (event.key === "ArrowUp") {
             selectingList[index].selected = false;
             index = index - 1;
             if (index >= 0) {
                selectingList[index].selected = true;
+               this.selected = selectingList[index];
             } else {
+               this.selected = undefined;
                this.$emit("LeaveTop");
             }
          } else if (event.key === "ArrowLeft" || event.key === "ArrowRight") {
             selectingList[index].selected = false;
             otherList[index].selected = true;
+            this.selected = otherList[index];
          } else if (event.key === "Escape") {
             selectingList[index].selected = false;
+            this.selected = undefined;
             this.$emit("LeaveTop");
          }
       } else if (event.key === "ArrowDown") {
          this.recent[0].selected = true;
+         this.selected = this.recent[0];
+      } else if (event.key === "Enter") {
+         this.emitSelection();
+      }
+   }
+
+   private emitSelection() {
+      console.log("Emit Selection");
+      if (this.selected) {
+         this.$emit("Select", this.selected);
       }
    }
 

@@ -6,7 +6,7 @@ export async function get<T>(url: string): Promise<T> {
 }
 
 export async function post<T_in, T_out>(url: string, content: T_in): Promise<T_out> {
-   console.log(JSON.stringify(content));
+   console.log("[POST] " + JSON.stringify(content) + ` (${url})`);
    const response = await fetch(url, {
       method: "POST",
       headers: {

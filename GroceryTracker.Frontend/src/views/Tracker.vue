@@ -2,10 +2,16 @@
    <div id="tracker">
       <div id="tracker-main">
          <div id="central-search-container">
-            <input id="central-search" type="text" autofocus ref="search" v-model="searchText" @keyup="search" />
+            <input id="central-search" type="text" autofocus ref="search" v-model="searchText" @keydown="typingSearch ? search() : undefined" />
          </div>
          <keep-alive>
-            <suggestions-container id="suggestions-container" @LeaveTop="focusSearch()" :openForSelection="true" v-if="searchText == ''" />
+            <suggestions-container
+               id="suggestions-container"
+               @LeaveTop="focusSearch"
+               @Select="selectSuggestion"
+               :openForSelection="typingSearch"
+               v-if="searchText == ''"
+            />
          </keep-alive>
          <keep-alive>
             <search-result-container v-if="searchText != ''" :results="searchResults.results" :search="searchResults.search" />
@@ -22,6 +28,7 @@ import SearchResultContainer from "../components/tracker/searchResultContainer.v
 
 import { post } from "../helpers";
 import { SearchResultsDto } from "@/dtos/searchResultsDto";
+import Suggestion from "@/model/suggestion";
 
 @Options({
    components: { SuggestionsContainer, SearchResultContainer },
@@ -33,6 +40,22 @@ export default class Tracker extends Vue {
       search: { articleName: "", originalSearchString: "", details: "", brandName: "", primaryCategory: "", dynamicSearchString: "", resultLimit: 10 },
       results: [],
    };
+   private typingSearch = false;
+
+   public async created() {
+      document.addEventListener("keydown", (args) => {
+         if (args.key !== "ArrowDown" && args.key !== "ArrowUp" && args.key !== "ArrowLeft" && args.key !== "ArrowRight") {
+            this.focusSearch();
+         } else {
+            this.typingSearch = true;
+         }
+      });
+   }
+
+   private selectSuggestion(suggestion: Suggestion) {
+      console.log("Select Suggestion");
+      console.log(suggestion);
+   }
 
    private async search() {
       let results = await post<string, SearchResultsDto>("https://localhost:5001/search", this.searchText);
@@ -40,7 +63,8 @@ export default class Tracker extends Vue {
    }
 
    private focusSearch() {
-      (this.$refs.search as HTMLInputElement).focus();
+      (this.$refs.search as HTMLInputElement)?.focus();
+      this.typingSearch = true;
    }
 }
 </script>
