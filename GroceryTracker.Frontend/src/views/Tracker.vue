@@ -2,19 +2,26 @@
    <div id="tracker">
       <div id="tracker-main">
          <div id="central-search-container">
-            <input id="central-search" type="text" autofocus ref="search" v-model="searchText" @keydown="typingSearch ? search() : undefined" />
+            <input id="central-search" type="text" autofocus ref="search" v-model="searchText" />
          </div>
          <keep-alive>
             <suggestions-container
+               key="suggestions"
                id="suggestions-container"
-               @LeaveTop="focusSearch"
-               @Select="selectSuggestion"
+               @leavetop="focusSearch"
+               @select="selectSuggestion"
                :openForSelection="typingSearch"
-               v-if="searchText == ''"
+               v-if="searchText === ''"
             />
          </keep-alive>
          <keep-alive>
-            <search-result-container v-if="searchText != ''" :results="searchResults.results" :search="searchResults.search" />
+            <search-result-container
+               key="searchresults"
+               v-if="searchText != ''"
+               :results="searchResults.results"
+               :search="searchResults.search"
+               @select="selectSearchResult"
+            />
          </keep-alive>
       </div>
       <div id="tracker-side">Warenkorb</div>
@@ -22,13 +29,14 @@
 </template>
 
 <script lang="ts">
-import { Options, Vue } from "vue-property-decorator";
+import { Options, Vue, Watch } from "vue-property-decorator";
 import SuggestionsContainer from "../components/tracker/suggestionsContainer.vue";
 import SearchResultContainer from "../components/tracker/searchResultContainer.vue";
 
 import { post } from "../helpers";
 import { SearchResultsDto } from "@/dtos/searchResultsDto";
 import Suggestion from "@/model/suggestion";
+import SearchResult from "@/model/searchResult";
 
 @Options({
    components: { SuggestionsContainer, SearchResultContainer },
@@ -44,7 +52,7 @@ export default class Tracker extends Vue {
 
    public async created() {
       document.addEventListener("keydown", (args) => {
-         if (args.key !== "ArrowDown" && args.key !== "ArrowUp" && args.key !== "ArrowLeft" && args.key !== "ArrowRight") {
+         if (!["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Enter"].includes(args.key)) {
             this.focusSearch();
          } else {
             this.typingSearch = true;
@@ -57,6 +65,12 @@ export default class Tracker extends Vue {
       console.log(suggestion);
    }
 
+   private selectSearchResult(searchResult: SearchResult) {
+      console.log("Select Search result");
+      console.log(searchResult);
+   }
+
+   @Watch("searchText")
    private async search() {
       let results = await post<string, SearchResultsDto>("https://localhost:5001/search", this.searchText);
       this.searchResults = results;

@@ -2,7 +2,7 @@
    <div class="wrapper">
       <h3>{{ title }}</h3>
       <ul class="suggestions-list">
-         <li v-for="(item, index) in suggestions" :key="index">
+         <li v-for="(item, index) in suggestions" :key="'suggestion' + index">
             <article-suggestion :articleName="item.articleName" :brandName="item.brandName" :details="item.details" :isSelected="item.selected" />
          </li>
       </ul>

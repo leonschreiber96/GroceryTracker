@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
@@ -20,8 +21,12 @@ namespace GroceryTracker.Backend.Controllers
       }
 
       [HttpPost]
-      public async Task<IActionResult> Post([FromBody] string searchString)
+      public async Task<IActionResult> Post([FromBody] string searchString, [FromQuery] int limit = 20)
       {
+         System.Console.WriteLine("[SearchController.Post] Received search string: " + searchString);
+         var sw = new Stopwatch();
+         sw.Start();
+
          try
          {
             var paramRegex = new Regex(@"((?<key>art|det|bra|cat)=(?<value>\S+))");
@@ -36,7 +41,7 @@ namespace GroceryTracker.Backend.Controllers
 
             search.DynamicSearchString = paramRegex.Replace(searchString, "").Trim();
 
-            search.ResultLimit = 10;
+            search.ResultLimit = limit;
 
             var returnValue = await articleAccess.SearchArticle(search);
             returnValue.Search = search;
@@ -47,6 +52,12 @@ namespace GroceryTracker.Backend.Controllers
          {
             return StatusCode(501, ex.Message);
          }
+         finally
+         {
+            sw.Stop();
+            System.Console.WriteLine("[SearchController.Post] Search took " + sw.ElapsedMilliseconds + "ms");
+         }
+
       }
    }
 }

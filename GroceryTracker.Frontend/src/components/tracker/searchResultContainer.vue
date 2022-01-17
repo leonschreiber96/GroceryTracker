@@ -13,11 +13,11 @@
          </thead>
          <tbody>
             <tr>
-               <td class="btn-new-article" colspan="5">
+               <td :class="'btn-new-article' + (selectionIndex == -1 ? ' selected' : '')" colspan="5">
                   <div>Neuen Artikel hinzufügen</div>
                </td>
             </tr>
-            <search-result :result="result" :search="search" v-for="(result, index) in results" :key="index" />
+            <article-search-result :result="result" :search="search" v-for="(result, index) in results" :key="'search' + index" />
          </tbody>
       </table>
    </div>
@@ -25,19 +25,58 @@
 
 <script lang="ts">
 import { Options, Prop, Vue } from "vue-property-decorator";
-import { Search, SearchResultDto } from "../../dtos/searchResultsDto";
-import SearchResult from "./searchResult.vue";
+import { Search } from "@/dtos/searchResultsDto";
+import SearchResult from "@/model/searchResult";
+import ArticleSearchResult from "./articleSearchResult.vue";
 
 @Options({
-   components: { SearchResult },
+   components: { ArticleSearchResult },
    name: "SearchResultContainer",
 })
 export default class SearchResultContainer extends Vue {
    @Prop({ default: [] })
-   results!: SearchResultDto[];
+   results!: SearchResult[];
 
    @Prop()
    search!: Search;
+
+   private selectionIndex = -2;
+
+   public activated() {
+      document.addEventListener("keydown", this.onKeyDown);
+      if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false;
+      this.selectionIndex = -2;
+   }
+
+   public deactivated() {
+      document.removeEventListener("keydown", this.onKeyDown);
+   }
+
+   private onKeyDown(event: KeyboardEvent) {
+      event.stopPropagation();
+
+      if (!["ArrowUp", "ArrowDown", "Enter"].includes(event.key)) {
+         return;
+      }
+
+      if (this.results.length === 0) {
+         return;
+      }
+
+      if (event.key === "ArrowDown") {
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false;
+         this.selectionIndex++;
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = true;
+      } else if (event.key === "ArrowUp") {
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false;
+         this.selectionIndex--;
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = true;
+      } else if (event.key === "Enter") {
+         if (this.selectionIndex >= 0) {
+            this.$emit("select", this.results[this.selectionIndex]);
+         }
+      }
+   }
 }
 </script>
 
@@ -67,6 +106,10 @@ export default class SearchResultContainer extends Vue {
    div {
       padding: 1em 0;
       line-height: 100%;
+   }
+
+   &.selected {
+      background-color: #929292;
    }
 
    &:hover {

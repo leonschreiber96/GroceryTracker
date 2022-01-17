@@ -6,17 +6,18 @@ export async function get<T>(url: string): Promise<T> {
 }
 
 export async function post<T_in, T_out>(url: string, content: T_in): Promise<T_out> {
-   console.log("[POST] " + JSON.stringify(content) + ` (${url})`);
-   const response = await fetch(url, {
-      method: "POST",
-      headers: {
-         Accept: "application/json",
-         "Content-Type": "application/json",
-      },
-      body: JSON.stringify(content),
+   return new Promise<T_out>((resolve, reject) => {
+      console.log("[POST] " + JSON.stringify(content) + ` (${url})`);
+      fetch(url, {
+         method: "POST",
+         headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+         },
+         body: JSON.stringify(content),
+      })
+         .then((response) => response.json())
+         .then((val) => val as T_out)
+         .then(resolve);
    });
-
-   const returnValue = await response.json();
-
-   return returnValue as T_out;
 }

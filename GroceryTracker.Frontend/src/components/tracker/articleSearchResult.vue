@@ -1,5 +1,5 @@
 <template>
-   <tr :class="'search-result ' + (isSelected ? 'selected' : '')">
+   <tr :class="'search-result ' + (result.selected ? 'selected' : '')">
       <td class="article-name">{{ result.articleName }}</td>
       <td>{{ result.details }}</td>
       <td>{{ result.brandName }}</td>
@@ -9,16 +9,17 @@
 </template>
 
 <script lang="ts">
-import { Search, SearchResultDto } from "@/dtos/searchResultsDto";
+import { Search } from "@/dtos/searchResultsDto";
+import SearchResult from "@/model/searchResult";
 import { Options, Prop, Vue } from "vue-property-decorator";
 
 @Options({
    components: {},
    name: "SearchResult",
 })
-export default class SearchResult extends Vue {
+export default class ArticleSearchResult extends Vue {
    @Prop()
-   result!: SearchResultDto;
+   result!: SearchResult;
 
    @Prop({ default: "" })
    search!: Search;
