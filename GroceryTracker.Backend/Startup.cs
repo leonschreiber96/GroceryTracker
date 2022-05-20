@@ -42,6 +42,15 @@ namespace GroceryTracker.Backend
 
          services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
 
+         dbConfig = new DatabaseConfiguration
+         {
+            Hostname = "localhost",
+            DatabaseName = "grocerytracker",
+            Port = 5432,
+            Username = "leonschreiber",
+            Password = ""
+         };
+
          services.AddSingleton<IDatabaseConfiguration>(dbConfig);
 
          services.AddSingleton<IDbEntityTypeInfo<DbAppUser>, DbEntityTypeInfo<DbAppUser>>();

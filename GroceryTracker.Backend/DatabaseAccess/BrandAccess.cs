@@ -1,3 +1,5 @@
+
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using GroceryTracker.Backend.Model.Db;
@@ -23,6 +25,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
          if (limit != null) query = query.Limit((int)limit);
 
+         Console.WriteLine(query.ToString());
          var dbResult = await this.GetManyAsync(query);
 
          return dbResult;

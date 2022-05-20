@@ -59,7 +59,6 @@ namespace GroceryTracker.Backend.DatabaseAccess
          }
       }
 
-
       public async Task<T> GetSingleAsync(Query query)
       {
          using (var connection = this.CreateConnection())
@@ -84,6 +83,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
       public async Task<IEnumerable<T>> GetManyAsync(Query query)
       {
+         System.Console.WriteLine("AccessBase -> GetManyAsync");
          using (var connection = this.CreateConnection())
          using (var queryFactory = this.QueryFactory(connection))
          {
