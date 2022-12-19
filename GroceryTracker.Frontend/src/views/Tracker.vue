@@ -24,61 +24,75 @@
             />
          </keep-alive>
       </div>
-      <div id="tracker-side">Warenkorb</div>
+      <div id="tracker-side">
+         <purchase-list :purchases="purchases"> </purchase-list>
+      </div>
    </div>
 </template>
 
 <script lang="ts">
-import { Options, Vue, Watch } from "vue-property-decorator";
-import SuggestionsContainer from "../components/tracker/suggestionsContainer.vue";
-import SearchResultContainer from "../components/tracker/searchResultContainer.vue";
+import { Options, Vue, Watch } from "vue-property-decorator"
+import SuggestionsContainer from "../components/tracker/suggestionsContainer.vue"
+import SearchResultContainer from "../components/tracker/searchResultContainer.vue"
+import PurchaseList from "../components/tracker/purchaseList.vue"
 
-import { post } from "../helpers";
-import { SearchResultsDto } from "@/dtos/searchResultsDto";
-import Suggestion from "@/model/suggestion";
-import SearchResult from "@/model/searchResult";
+import { post } from "../helpers"
+import { SearchResultsDto } from "@/dtos/searchResultsDto"
+import Suggestion from "@/model/suggestion"
+import SearchResult from "@/model/searchResult"
 
 @Options({
-   components: { SuggestionsContainer, SearchResultContainer },
+   components: { SuggestionsContainer, SearchResultContainer, PurchaseList },
    name: "tracker",
 })
 export default class Tracker extends Vue {
-   private searchText = "";
-   private searchResults: SearchResultsDto = {
-      search: { articleName: "", originalSearchString: "", details: "", brandName: "", primaryCategory: "", dynamicSearchString: "", resultLimit: 10 },
+   public searchText = ""
+   public searchResults: SearchResultsDto = {
+      search: {
+         articleName: "",
+         originalSearchString: "",
+         details: "",
+         brandName: "",
+         primaryCategory: "",
+         dynamicSearchString: "",
+         resultLimit: 10,
+      },
       results: [],
-   };
-   private typingSearch = false;
+   }
+   public typingSearch = false
+   public purchases: string[] = []
 
    public async created() {
       document.addEventListener("keydown", (args) => {
          if (!["ArrowDown", "ArrowUp", "ArrowLeft", "ArrowRight", "Enter"].includes(args.key)) {
-            this.focusSearch();
+            this.focusSearch()
          } else {
-            this.typingSearch = true;
+            this.typingSearch = true
          }
-      });
+      })
    }
 
-   private selectSuggestion(suggestion: Suggestion) {
-      console.log("Select Suggestion");
-      console.log(suggestion);
+   public selectSuggestion(suggestion: Suggestion): void {
+      console.log("Select Suggestion")
+      console.log(suggestion)
+      this.purchases.push(suggestion.articleName)
    }
 
-   private selectSearchResult(searchResult: SearchResult) {
-      console.log("Select Search result");
-      console.log(searchResult);
+   public selectSearchResult(searchResult: SearchResult): void {
+      console.log("Select Search result")
+      console.log(searchResult)
+      this.purchases.push(searchResult.articleName)
    }
 
    @Watch("searchText")
    private async search() {
-      let results = await post<string, SearchResultsDto>("https://localhost:5001/search", this.searchText);
-      this.searchResults = results;
+      let results = await post<string, SearchResultsDto>("http://localhost:3000/search", this.searchText)
+      this.searchResults = results
    }
 
-   private focusSearch() {
-      (this.$refs.search as HTMLInputElement)?.focus();
-      this.typingSearch = true;
+   public focusSearch(): void {
+      ;(this.$refs.search as HTMLInputElement)?.focus()
+      this.typingSearch = true
    }
 }
 </script>

@@ -9,9 +9,9 @@
 </template>
 
 <script lang="ts">
-import { Search } from "@/dtos/searchResultsDto";
-import SearchResult from "@/model/searchResult";
-import { Options, Prop, Vue } from "vue-property-decorator";
+import { Search } from "@/dtos/searchResultsDto"
+import SearchResult from "@/model/searchResult"
+import { Options, Prop, Vue } from "vue-property-decorator"
 
 @Options({
    components: {},
@@ -19,21 +19,29 @@ import { Options, Prop, Vue } from "vue-property-decorator";
 })
 export default class ArticleSearchResult extends Vue {
    @Prop()
-   result!: SearchResult;
+   result!: SearchResult
 
    @Prop({ default: "" })
-   search!: Search;
+   search!: Search
 
    @Prop({ default: false })
-   isSelected!: boolean;
+   isSelected!: boolean
 
-   get labels(): { article: string; brand: string; details: string; category: string } {
+   get labels(): {
+      article: string
+      brand: string
+      details: string
+      category: string
+   } {
       return {
          article: this.result.articleName.replace(`(${this.search.articleName})`, this.search.articleName.bold()),
          brand: this.result.brandName.replace(`(${this.search.brandName})`, this.search.brandName.bold()),
          details: this.result.details.replace(`(${this.search.details})`, this.search.details.bold()),
-         category: this.result.categoryName.replace(`(${this.search.primaryCategory})`, this.search.primaryCategory.bold()),
-      };
+         category: this.result.categoryName.replace(
+            `(${this.search.primaryCategory})`,
+            this.search.primaryCategory.bold()
+         ),
+      }
    }
 }
 </script>

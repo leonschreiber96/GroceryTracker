@@ -3,17 +3,24 @@
       <h3>{{ title }}</h3>
       <ul class="suggestions-list">
          <li v-for="(item, index) in suggestions" :key="'suggestion' + index">
-            <article-suggestion :articleName="item.articleName" :brandName="item.brandName" :details="item.details" :isSelected="item.selected" />
+            <article-suggestion
+               :articleId="item.articleId"
+               :articleName="item.articleName"
+               :brandName="item.brandName"
+               :details="item.details"
+               :isSelected="item.selected"
+               @selected="select"
+            />
          </li>
       </ul>
    </div>
 </template>
 
 <script lang="ts">
-import { Options, Prop, Vue, Watch } from "vue-property-decorator";
-import Suggestion from "../../model/suggestion";
+import { Options, Prop, Vue, Watch } from "vue-property-decorator"
+import Suggestion from "../../model/suggestion"
 
-import ArticleSuggestion from "./articleSuggestion.vue";
+import ArticleSuggestion from "./articleSuggestion.vue"
 
 @Options({
    components: { ArticleSuggestion },
@@ -21,10 +28,16 @@ import ArticleSuggestion from "./articleSuggestion.vue";
 })
 export default class Suggestions extends Vue {
    @Prop({ default: [] })
-   suggestions!: Suggestion[];
+   suggestions!: Suggestion[]
 
    @Prop({ default: "" })
-   title!: string;
+   title!: string
+
+   public select(suggestion?: Suggestion) {
+      if (suggestion) {
+         this.$emit("selected", suggestion)
+      }
+   }
 }
 </script>
 

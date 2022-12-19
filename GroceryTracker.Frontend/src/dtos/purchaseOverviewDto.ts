@@ -1,5 +1,6 @@
 export default interface PurchaseOverviewDto {
-   articleName: string;
-   brandName: string;
-   details: string;
+   articleId: number
+   articleName: string
+   brandName: string
+   details: string
 }

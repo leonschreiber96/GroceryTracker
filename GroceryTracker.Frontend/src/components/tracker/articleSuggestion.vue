@@ -1,5 +1,5 @@
 <template>
-   <div :class="'article-suggestion ' + (isSelected ? 'selected' : '')">
+   <div :class="'article-suggestion ' + (isSelected ? 'selected' : '')" @click="clicked">
       <span class="article-name"
          >{{ articleName }} <span v-if="details"> - {{ details }}</span></span
       >
@@ -8,24 +8,31 @@
 </template>
 
 <script lang="ts">
-import { Options, Prop, Vue } from "vue-property-decorator";
+import { Options, Prop, Vue } from "vue-property-decorator"
 
 @Options({
    components: {},
    name: "ArticleSuggestion",
 })
 export default class ArticleSuggestion extends Vue {
-   @Prop({ default: "" })
-   articleName!: string;
+   @Prop({ default: undefined })
+   articleId!: number
 
    @Prop({ default: "" })
-   brandName!: string;
+   articleName!: string
 
    @Prop({ default: "" })
-   details!: string;
+   brandName!: string
+
+   @Prop({ default: "" })
+   details!: string
 
    @Prop({ default: false })
-   isSelected!: boolean;
+   isSelected!: boolean
+
+   public clicked() {
+      this.$emit("selected", this.articleId)
+   }
 }
 </script>
 

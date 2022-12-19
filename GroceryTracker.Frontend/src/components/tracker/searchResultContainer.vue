@@ -17,17 +17,22 @@
                   <div>Neuen Artikel hinzufügen</div>
                </td>
             </tr>
-            <article-search-result :result="result" :search="search" v-for="(result, index) in results" :key="'search' + index" />
+            <article-search-result
+               :result="result"
+               :search="search"
+               v-for="(result, index) in results"
+               :key="'search' + index"
+            />
          </tbody>
       </table>
    </div>
 </template>
 
 <script lang="ts">
-import { Options, Prop, Vue } from "vue-property-decorator";
-import { Search } from "@/dtos/searchResultsDto";
-import SearchResult from "@/model/searchResult";
-import ArticleSearchResult from "./articleSearchResult.vue";
+import { Options, Prop, Vue } from "vue-property-decorator"
+import { Search } from "@/dtos/searchResultsDto"
+import SearchResult from "@/model/searchResult"
+import ArticleSearchResult from "./articleSearchResult.vue"
 
 @Options({
    components: { ArticleSearchResult },
@@ -35,45 +40,45 @@ import ArticleSearchResult from "./articleSearchResult.vue";
 })
 export default class SearchResultContainer extends Vue {
    @Prop({ default: [] })
-   results!: SearchResult[];
+   results!: SearchResult[]
 
    @Prop()
-   search!: Search;
+   search!: Search
 
-   private selectionIndex = -2;
+   public selectionIndex = -2
 
    public activated() {
-      document.addEventListener("keydown", this.onKeyDown);
-      if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false;
-      this.selectionIndex = -2;
+      document.addEventListener("keydown", this.onKeyDown)
+      if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false
+      this.selectionIndex = -2
    }
 
    public deactivated() {
-      document.removeEventListener("keydown", this.onKeyDown);
+      document.removeEventListener("keydown", this.onKeyDown)
    }
 
    private onKeyDown(event: KeyboardEvent) {
-      event.stopPropagation();
+      event.stopPropagation()
 
       if (!["ArrowUp", "ArrowDown", "Enter"].includes(event.key)) {
-         return;
+         return
       }
 
       if (this.results.length === 0) {
-         return;
+         return
       }
 
       if (event.key === "ArrowDown") {
-         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false;
-         this.selectionIndex++;
-         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = true;
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false
+         this.selectionIndex++
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = true
       } else if (event.key === "ArrowUp") {
-         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false;
-         this.selectionIndex--;
-         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = true;
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = false
+         this.selectionIndex--
+         if (this.selectionIndex >= 0) this.results[this.selectionIndex].selected = true
       } else if (event.key === "Enter") {
          if (this.selectionIndex >= 0) {
-            this.$emit("select", this.results[this.selectionIndex]);
+            this.$emit("select", this.results[this.selectionIndex])
          }
       }
    }
