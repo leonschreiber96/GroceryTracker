@@ -141,5 +141,7 @@ docs/_book
 
 # TODO: where does this rule come from?
 test/
+.DS_STORE
+.vs
 
 # End of https://www.toptal.com/developers/gitignore/api/node,vue,dotnetcore
