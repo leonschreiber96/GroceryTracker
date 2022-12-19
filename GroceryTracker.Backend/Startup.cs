@@ -24,8 +24,6 @@ namespace GroceryTracker.Backend
       // This method gets called by the runtime. Use this method to add services to the container.
       public void ConfigureServices(IServiceCollection services)
       {
-         services.AddCors();
-
          services.AddControllers().AddJsonOptions(options =>
          {
             var enumConverter = new JsonStringEnumConverter();
@@ -38,7 +36,7 @@ namespace GroceryTracker.Backend
 
          Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
          var dbConfig = Configuration.GetSection("Database").Get<DatabaseConfiguration>();
-         var identityKey = Configuration["Identity:Key"];
+         // var identityKey = Configuration["Identity:Key"];
 
          services.AddSingleton<ISessionManager>(x => new SessionManager(new TimeSpan(hours: 0, minutes: 20, seconds: 0)));
 
@@ -72,7 +70,7 @@ namespace GroceryTracker.Backend
             app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "GroceryTracker.Backend v1"));
          }
 
-         app.UseHttpsRedirection();
+         // app.UseHttpsRedirection();
 
          app.UseRouting();
 

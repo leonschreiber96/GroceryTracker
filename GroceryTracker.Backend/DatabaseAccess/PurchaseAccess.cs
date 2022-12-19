@@ -49,6 +49,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
       {
          var selectColumns = new string[]
          {
+            this.articleEtInfo.FullPropPath(nameof(DbArticle.Id)) + " as ArticleId",
             this.tripEtInfo.FullPropPath(nameof(DbShoppingTrip.Timestamp)),
             this.articleEtInfo.FullPropPath(nameof(DbArticle.Name)) + " as ArticleName",
             this.brandEtInfo.FullPropPath(nameof(DbBrand.Name)) + " as BrandName",
@@ -77,6 +78,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
       {
          var selectColumns = new string[]
          {
+            this.articleEtInfo.FullPropPath(nameof(DbArticle.Id)) + " as ArticleId",
             this.articleEtInfo.FullPropPath(nameof(DbArticle.Name)) + " as ArticleName",
             this.brandEtInfo.FullPropPath(nameof(DbBrand.Name)) + " as BrandName",
             this.articleEtInfo.FullPropPath(nameof(DbArticle.Details))
@@ -103,8 +105,6 @@ namespace GroceryTracker.Backend.DatabaseAccess
 
             return dbResult;
          }
-
-         throw new NotImplementedException();
       }
    }
 }

@@ -218,6 +218,7 @@ namespace GroceryTracker.Backend.DatabaseAccess
          using (var connection = this.CreateConnection())
          {
             var sql = $"SELECT * FROM {functionName}({parameterString})";
+            System.Console.WriteLine(sql);
             var dbResult = await connection.QueryAsync<ReturnType>(sql);
 
             return dbResult;
