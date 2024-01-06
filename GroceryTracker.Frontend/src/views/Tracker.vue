@@ -25,7 +25,7 @@
          </keep-alive>
       </div>
       <div id="tracker-side">
-         <purchase-list :purchases="purchases"> </purchase-list>
+         <purchase-list :purchases="purchases" @deletePurchase="deletePurchase"> </purchase-list>
       </div>
    </div>
 </template>
@@ -40,6 +40,7 @@ import { post } from "../helpers"
 import { SearchResultsDto } from "@/dtos/searchResultsDto"
 import Suggestion from "@/model/suggestion"
 import SearchResult from "@/model/searchResult"
+import PurchaseOverviewDto from "@/dtos/purchaseOverviewDto"
 
 @Options({
    components: { SuggestionsContainer, SearchResultContainer, PurchaseList },
@@ -60,7 +61,7 @@ export default class Tracker extends Vue {
       results: [],
    }
    public typingSearch = false
-   public purchases: string[] = []
+   public purchases: PurchaseOverviewDto[] = []
 
    public async created() {
       document.addEventListener("keydown", (args) => {
@@ -73,20 +74,27 @@ export default class Tracker extends Vue {
    }
 
    public selectSuggestion(suggestion: Suggestion): void {
-      console.log("Select Suggestion")
-      console.log(suggestion)
-      this.purchases.push(suggestion.articleName)
+      this.purchases.push(suggestion)
+      console.log(suggestion.details)
    }
 
    public selectSearchResult(searchResult: SearchResult): void {
-      console.log("Select Search result")
       console.log(searchResult)
-      this.purchases.push(searchResult.articleName)
+      this.purchases.push({
+         articleId: searchResult.id,
+         articleName: searchResult.articleName,
+         details: searchResult.details,
+         brandName: searchResult.brandName,
+      })
+   }
+
+   public deletePurchase(purchase: PurchaseOverviewDto) {
+      this.purchases = this.purchases.filter((p) => p.articleId != purchase.articleId)
    }
 
    @Watch("searchText")
    private async search() {
-      let results = await post<string, SearchResultsDto>("http://localhost:3000/search", this.searchText)
+      let results = await post<string, SearchResultsDto>("https://localhost:5002/search", this.searchText)
       this.searchResults = results
    }
 

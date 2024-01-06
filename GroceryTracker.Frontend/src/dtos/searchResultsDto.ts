@@ -14,6 +14,7 @@ export interface Search {
 }
 
 export interface SearchResultDto {
+   id: number
    articleName: string
    brandName: string
    details: string

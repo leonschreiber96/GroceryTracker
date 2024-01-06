@@ -9,7 +9,7 @@
                :brandName="item.brandName"
                :details="item.details"
                :isSelected="item.selected"
-               @selected="select"
+               @selected="() => select(item)"
             />
          </li>
       </ul>

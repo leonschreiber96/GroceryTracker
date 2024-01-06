@@ -94,8 +94,8 @@ export default class SuggestionsContainer extends Vue {
    }
 
    private async fetchSuggestions() {
-      let recent = get<Suggestion[]>("http://localhost:3000/purchase/recent?marketId=9")
-      let frequent = get<Suggestion[]>("http://localhost:3000/purchase/frequent?marketId=9")
+      let recent = get<Suggestion[]>("https://localhost:5002/purchase/recent?marketId=9")
+      let frequent = get<Suggestion[]>("https://localhost:5002/purchase/frequent?marketId=9")
 
       ;[this.frequent, this.recent] = await Promise.all([frequent, recent])
    }

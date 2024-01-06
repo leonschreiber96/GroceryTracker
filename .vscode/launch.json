@@ -10,7 +10,7 @@
          "request": "launch",
          "preLaunchTask": "build",
          // If you have changed target frameworks, make sure to update the program path.
-         "program": "${workspaceFolder}\\GroceryTracker.Backend\\bin\\Debug\\net5.0\\GroceryTracker.Backend.dll",
+         "program": "${workspaceFolder}\\GroceryTracker.Backend\\bin\\Debug\\net6.0\\GroceryTracker.Backend.dll",
          "args": ["--urls=https://localhost:5002"],
          "cwd": "${workspaceFolder}/GroceryTracker.Backend",
          "stopAtEntry": false,
