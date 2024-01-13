@@ -1,13 +1,8 @@
+using GroceryTracker.Backend.Model.Db;
+
 namespace GroceryTracker.Backend.Model.Dto
 {
-   public class CategoryDto
+   public record CategoryDto : DbCategory
    {
-      public int CategoryId { get; set; }
-
-      public int OwnerId { get; set; }
-
-      public string Name { get; set; }
-
-      public int? Parent { get; set; }
    }
 }

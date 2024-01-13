@@ -1,11 +1,8 @@
+using GroceryTracker.Backend.Model.Db;
+
 namespace GroceryTracker.Backend.Model.Dto
 {
-   public class MarketDto
+   public record MarketDto : DbMarket
    {
-      public int MarketId { get; set; }
-
-      public int OwnerId { get; set; }
-
-      public string Name { get; set; }
    }
 }

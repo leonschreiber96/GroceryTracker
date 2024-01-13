@@ -51,6 +51,10 @@ namespace GroceryTracker.Backend.Controllers
       {
          var tcs = new TaskCompletionSource<IActionResult>();
          tcs.SetException(new NotImplementedException());
+
+         System.Console.WriteLine(purchaseDto);
+         System.Console.WriteLine(tripId);
+
          return await tcs.Task;
       }
 
