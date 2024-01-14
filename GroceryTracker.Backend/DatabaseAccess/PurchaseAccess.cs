@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using GroceryTracker.Backend.Model.Db;
 using GroceryTracker.Backend.Model.Dto;
@@ -30,6 +31,12 @@ namespace GroceryTracker.Backend.DatabaseAccess
       /// <param name="marketId">Id of the market</param>
       /// <param name="limit">How many purchases to return at max</param>
       Task<IEnumerable<PurchaseOverviewDto>> GetFrequentAsync(int marketId, int limit = 30);
+
+      /// <summary>
+      /// Returns the last purchase of the given article.
+      /// </summary>
+      /// <param name="articleId">Id of the article</param>
+      Task<PurchaseDto> GetLastPurchaseOfArticleAsync(int id);
    }
 
    public class PurchaseAccess : AccessBase<DbPurchase>, IPurchaseAccess
@@ -145,6 +152,25 @@ namespace GroceryTracker.Backend.DatabaseAccess
             var dbResult = await queryFactory.FromQuery(query).GetAsync<PurchaseOverviewDto>();
 
             return dbResult;
+         }
+      }
+
+      public async Task<PurchaseDto> GetLastPurchaseOfArticleAsync(int articleId)
+      {
+         var query = new Query(this.EntityTypeInfo.Name)
+            .Where(this.EntityTypeInfo.FullPropPath(nameof(DbPurchase.ArticleId)), articleId)
+            .Join(this.tripEtInfo.Name, this.tripEtInfo.FullPropPath(nameof(DbShoppingTrip.Id)), this.EntityTypeInfo.FullPropPath(nameof(DbPurchase.TripId)))
+            .Join(this.articleEtInfo.Name, this.articleEtInfo.FullPropPath(nameof(DbArticle.Id)), this.EntityTypeInfo.FullPropPath(nameof(DbPurchase.ArticleId)))
+            .Join(this.brandEtInfo.Name, this.brandEtInfo.FullPropPath(nameof(DbBrand.Id)), this.articleEtInfo.FullPropPath(nameof(DbArticle.BrandId)))
+            .OrderByDesc(this.EntityTypeInfo.FullPropPath(nameof(DbPurchase.TripId)))
+            .Limit(1);
+
+         using (var connection = this.CreateConnection())
+         using (var queryFactory = this.QueryFactory(connection))
+         {
+            var dbResult = await queryFactory.FromQuery(query).GetAsync<PurchaseDto>();
+
+            return dbResult.SingleOrDefault();
          }
       }
    }

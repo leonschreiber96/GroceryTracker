@@ -29,21 +29,21 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] CategoryDto categoryDto)
       {
-         var targetCategory = await this.categoryAccess.GetSingleAsync(categoryDto.CategoryId);
+         var targetCategory = await this.categoryAccess.GetSingleAsync(categoryDto.Id);
 
          if (targetCategory == null) return NotFound("Category does not exist in database.");
 
-         if (targetCategory.ParentId != categoryDto.Parent)
+         if (targetCategory.ParentId != categoryDto.ParentId)
          {
-            var parent = this.categoryAccess.GetSingleAsync((int)categoryDto.Parent);
+            var parent = this.categoryAccess.GetSingleAsync((int)categoryDto.Id);
             if (parent == null) return NotFound("Parent category does not exist in database.");
          }
 
          var category = new DbCategory
          {
-            Id = categoryDto.CategoryId,
+            Id = categoryDto.Id,
             Name = categoryDto.Name ?? targetCategory.Name,
-            ParentId = categoryDto.Parent ?? targetCategory.ParentId,
+            ParentId = categoryDto.ParentId ?? targetCategory.ParentId,
             OwnerId = 1
          };
 
@@ -62,16 +62,16 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPost]
       public async Task<IActionResult> Post([FromForm] CategoryDto categoryDto)
       {
-         if (categoryDto.Parent != null)
+         if (categoryDto.ParentId != null)
          {
-            var parent = this.categoryAccess.GetSingleAsync((int)categoryDto.Parent);
+            var parent = this.categoryAccess.GetSingleAsync((int)categoryDto.ParentId);
             if (parent == null) return NotFound("Parent category does not exist in database.");
          }
 
          var category = new DbCategory
          {
             Name = categoryDto.Name,
-            ParentId = categoryDto.Parent,
+            ParentId = categoryDto.ParentId,
             OwnerId = 1
          };
 

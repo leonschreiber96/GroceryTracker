@@ -38,6 +38,14 @@ namespace GroceryTracker.Backend.Controllers
          return Ok(recent);
       }
 
+      [HttpGet]
+      [Route("last")]
+      public async Task<IActionResult> GetLast([FromQuery] int articleId)
+      {
+         var last = await purchaseAccess.GetLastPurchaseOfArticleAsync(articleId);
+         return Ok(last);
+      }
+
       [HttpPut]
       public async Task<IActionResult> EditPurchase([FromBody] PurchaseDto purchaseDto)
       {

@@ -29,13 +29,13 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] BrandDto brandDto)
       {
-         var targetBrand = await this.brandAccess.GetSingleAsync(brandDto.BrandId);
+         var targetBrand = await this.brandAccess.GetSingleAsync(brandDto.Id);
 
          if (targetBrand == null) return NotFound("Brand does not exist in database.");
 
          var brand = new DbBrand
          {
-            Id = brandDto.BrandId,
+            Id = brandDto.Id,
             Name = brandDto.Name,
             OwnerId = 1
          };

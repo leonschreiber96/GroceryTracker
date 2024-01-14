@@ -25,7 +25,7 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] ArticleDto articleDto)
       {
-         var targetArticle = await this.articleAccess.GetSingleAsync(articleDto.ArticleId);
+         var targetArticle = await this.articleAccess.GetSingleAsync(articleDto.Id);
 
          if (targetArticle == null) return NotFound("Article does not exist in database.");
 
@@ -41,7 +41,7 @@ namespace GroceryTracker.Backend.Controllers
 
          var article = new DbArticle
          {
-            Id = articleDto.ArticleId,
+            Id = articleDto.Id,
             Name = articleDto.Name,
             BrandId = articleDto.BrandId,
             CategoryId = articleDto.CategoryId,

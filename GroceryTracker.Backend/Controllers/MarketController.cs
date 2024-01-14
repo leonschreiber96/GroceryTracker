@@ -29,13 +29,13 @@ namespace GroceryTracker.Backend.Controllers
       [HttpPut]
       public async Task<IActionResult> Put([FromForm] MarketDto marketDto)
       {
-         var targetMarket = await this.marketAccess.GetSingleAsync(marketDto.MarketId);
+         var targetMarket = await this.marketAccess.GetSingleAsync(marketDto.Id);
 
          if (targetMarket == null) return NotFound("Market does not exist in database.");
 
          var market = new DbMarket
          {
-            Id = marketDto.MarketId,
+            Id = marketDto.Id,
             Name = marketDto.Name,
             OwnerId = 1
          };
